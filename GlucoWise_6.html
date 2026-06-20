@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0F6E56">
+<title>GlucoWise</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#eef2f0}
+:root{
+  --teal:#0F6E56;--teal-mid:#1D9E75;--teal-light:#E1F5EE;
+  --amber:#B45309;--amber-light:#FEF3C7;
+  --red:#991B1B;--red-light:#FEE2E2;--red-mid:#DC2626;
+  --green:#166534;--green-light:#DCFCE7;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --bg:#ffffff;--bg2:#f8fafc;
+  --text:#1e293b;--muted:#64748b;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0f172a;--bg2:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--border:#334155;--border2:#475569}
+  body,html{background:#090f1a}
+  input,select{background:var(--bg2)!important;color:var(--text)!important;border-color:var(--border2)!important}
+}
+.app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;position:relative}
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(62px + var(--safe-bottom));-webkit-overflow-scrolling:touch}
+.screen.active{display:flex}
+.top-bar{padding:calc(10px + var(--safe-top)) 16px 11px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;flex-shrink:0}
+.top-bar h2{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.top-bar .sub{font-size:13px;color:var(--muted);margin-top:1px}
+.nav-bar{position:absolute;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:var(--safe-bottom)}
+.nav-btn{flex:1;padding:9px 2px 7px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--muted);font-family:inherit;transition:color .15s;min-width:0}
+.nav-btn i{font-size:22px}
+.nav-btn.active{color:var(--teal)}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin:0 14px 12px}
+.sec{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;padding:14px 16px 5px;font-weight:700}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 12px}
+.stat-card{background:var(--bg2);border-radius:12px;padding:13px 14px;border:1px solid var(--border)}
+.s-lbl{font-size:12px;color:var(--muted);font-weight:600}
+.s-val{font-size:24px;font-weight:700;margin-top:3px;letter-spacing:-.5px}
+.s-val.teal{color:var(--teal)}.s-val.amber{color:var(--amber)}.s-val.red{color:var(--red)}.s-val.green{color:var(--green)}
+.tag{display:inline-flex;align-items:center;font-size:12px;padding:3px 10px;border-radius:20px;font-weight:700}
+.tag.green{background:var(--green-light);color:var(--green)}
+.tag.amber{background:var(--amber-light);color:var(--amber)}
+.tag.red{background:var(--red-light);color:var(--red)}
+.tag.teal{background:var(--teal-light);color:var(--teal)}
+.btn{width:100%;padding:14px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .15s;letter-spacing:-.1px}
+.btn:active{transform:scale(.98)}
+.btn-p{background:var(--teal);color:#fff}
+.btn-s{background:var(--bg2);color:var(--text);border:1px solid var(--border2)}
+.btn-sm{padding:9px 16px;font-size:14px;border-radius:10px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--bg);color:var(--text);font-family:inherit;transition:all .15s}
+.btn-sm:active{transform:scale(.97)}
+.fl{font-size:13px;color:var(--muted);margin-bottom:5px;font-weight:600}
+input[type=text],input[type=number],select{width:100%;border:1px solid var(--border2);border-radius:10px;padding:11px 13px;font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);-webkit-appearance:none;appearance:none;transition:border-color .15s}
+input:focus,select:focus{outline:none;border-color:var(--teal)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.alert{border-radius:12px;padding:13px 15px;margin:0 14px 12px;font-size:14px;line-height:1.55}
+.alert.red{background:var(--red-light);color:var(--red);border:1px solid #fca5a5}
+.alert.amber{background:var(--amber-light);color:var(--amber);border:1px solid #fcd34d}
+.alert.green{background:var(--green-light);color:var(--green);border:1px solid #86efac}
+.alert.teal{background:var(--teal-light);color:var(--teal);border:1px solid #6ee7c7}
+.alert i{margin-right:5px;vertical-align:-2px}
+.dose-res{border-radius:16px;padding:20px 18px;margin:0 14px 12px;color:#fff}
+.dr-lbl{font-size:13px;opacity:.85;margin-bottom:6px;font-weight:600}
+.dr-num{font-size:44px;font-weight:800;letter-spacing:-2px;line-height:1}
+.dr-note{font-size:13px;opacity:.8;margin-top:5px}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px}
+.rrow:last-child{border:none}
+.rlbl{color:var(--muted);flex:1;padding-right:10px}
+.rval{font-weight:700;flex-shrink:0}
+.rval.pos{color:var(--teal)}.rval.neg{color:var(--red)}.rval.neu{color:var(--muted)}
+.hi-item{padding:13px 0;border-bottom:1px solid var(--border);display:flex;gap:11px;align-items:flex-start}
+.hi-item:last-child{border:none}
+.dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot.green{background:var(--teal-mid)}.dot.amber{background:var(--amber)}.dot.red{background:var(--red-mid)}
+.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px 12px}
+.tbtn{border:1px solid var(--border2);border-radius:10px;padding:10px 12px;background:var(--bg);cursor:pointer;font-size:13px;font-family:inherit;color:var(--muted);display:flex;align-items:center;gap:6px;transition:all .15s;font-weight:600}
+.tbtn:active{transform:scale(.97)}
+.tbtn.sel{background:var(--teal-light);border-color:var(--teal);color:var(--teal)}
+.tir-row{display:flex;height:18px;border-radius:6px;overflow:hidden;margin:8px 0}
+.tir-seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.btrack{background:var(--bg2);border-radius:4px;height:8px;margin-top:5px;overflow:hidden;border:1px solid var(--border)}
+.bfill{height:100%;border-radius:4px;transition:width .6s}
+.bfill.teal{background:var(--teal-mid)}.bfill.amber{background:var(--amber)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;min-height:4px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:13px}
+.chip .cv{color:var(--teal);font-weight:700;font-size:12px}
+.chip-x{cursor:pointer;color:var(--muted);display:flex;align-items:center}
+.tpill{padding:7px 15px;border-radius:20px;font-size:13px;cursor:pointer;border:1px solid var(--border2);background:var(--bg);color:var(--muted);font-family:inherit;font-weight:600;transition:all .15s}
+.tpill.active{background:var(--teal-light);color:var(--teal);border-color:var(--teal)}
+.ins{border-left:3px solid var(--teal);background:var(--teal-light);border-radius:0 12px 12px 0;padding:11px 14px;margin:0 14px 10px;font-size:14px;color:var(--teal);line-height:1.55}
+.ins.warn{border-color:var(--amber);background:var(--amber-light);color:var(--amber)}
+.ins.good{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.ins strong{font-weight:700}
+.hypo-ban{background:var(--red-mid);color:#fff;border-radius:16px;padding:20px 18px;margin:14px;text-align:center}
+.hypo-ban i{font-size:36px;margin-bottom:8px;display:block}
+.hypo-ban h3{font-size:18px;font-weight:800;margin-bottom:8px}
+.hypo-ban p{font-size:14px;opacity:.9;line-height:1.6}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}
+.srow:last-child{border:none}
+.srow .sl{font-size:15px;color:var(--text)}
+.srow .ss{font-size:12px;color:var(--muted);margin-top:1px}
+.srow .sv{font-size:15px;color:var(--teal);font-weight:700}
+.srow input[type=number]{width:72px;padding:7px 10px;font-size:14px;text-align:right}
+.ccol{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.cbar{width:100%;border-radius:4px 4px 0 0}
+.clbl{font-size:10px;color:var(--muted);text-align:center}
+.cval{font-size:11px;font-weight:700;text-align:center}
+.glucose-hero{font-size:54px;font-weight:800;letter-spacing:-3px;line-height:1}
+.glucose-hero.in{color:var(--teal)}.glucose-hero.high{color:var(--amber)}.glucose-hero.low{color:var(--red)}
+.toast{position:fixed;bottom:calc(72px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(16px);background:#1e293b;color:#fff;padding:11px 20px;border-radius:30px;font-size:14px;font-weight:600;opacity:0;transition:all .3s;z-index:200;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div class="screen" id="s-home">
+  <div class="top-bar" style="display:flex;align-items:center;justify-content:space-between">
+    <div><div style="font-size:13px;color:var(--muted);font-weight:600" id="home-greeting">Good evening, Shilpa</div><h2>GlucoWise</h2></div>
+    <div style="display:flex;align-items:center;gap:8px"><span class="tag teal">TIR 74%</span><i class="ti ti-bell" style="font-size:22px;color:var(--muted)"></i></div>
+  </div>
+  <div style="padding:14px 14px 0">
+    <div class="card" style="margin:0 0 12px">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:10px">Current glucose</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <div class="glucose-hero high">148</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px">mg/dL &nbsp;·&nbsp; 14 min ago</div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:7px"><span class="tag amber">&#x2197; Rising</span><span style="font-size:12px;color:var(--muted)">Target: 99&#8211;126</span></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--muted);font-weight:600">Active insulin</div>
+          <div style="font-size:26px;font-weight:800;color:var(--teal);letter-spacing:-.5px">1.2u</div>
+          <div style="font-size:11px;color:var(--muted)">~2h remaining</div>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="tir-row">
+          <div class="tir-seg" style="width:4%;background:#991B1B"></div>
+          <div class="tir-seg" style="width:8%;background:#DC2626"></div>
+          <div class="tir-seg" style="width:74%;background:var(--teal-mid)">74%</div>
+          <div class="tir-seg" style="width:10%;background:var(--amber)"></div>
+          <div class="tir-seg" style="width:4%;background:#92400E"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:3px">
+          <span style="color:var(--red)">Low 12%</span><span style="color:var(--teal);font-weight:700">In range 74%</span><span style="color:var(--amber)">High 14%</span>
+        </div>
+      </div>
+    </div>
+        <button class="btn btn-p" onclick="go('s-calc')" style="margin-bottom:14px;font-size:17px;padding:15px"><i class="ti ti-calculator" style="margin-right:8px;vertical-align:-2px"></i>Start pre-meal check</button>
+  </div>
+  <div class="sec">Last meal</div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div><div style="font-size:15px;font-weight:700">Dinner &nbsp;&#183;&nbsp; 7:14 PM</div><div style="font-size:14px;color:var(--muted);margin-top:3px">Dal, rice, paneer curry</div><div style="font-size:12px;color:var(--muted);margin-top:2px">75g carbs &#183; High protein &#183; High fat</div></div>
+      <div style="text-align:right;flex-shrink:0;margin-left:12px"><div style="font-size:17px;font-weight:800;color:var(--teal)">7u taken</div><span class="tag amber" style="font-size:11px;margin-top:5px;display:inline-flex">2hr: 176</span></div>
+    </div>
+  </div>
+  <div class="sec">Post-meal check due</div>
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font-size:15px;font-weight:700"><i class="ti ti-clock" style="font-size:16px;vertical-align:-2px;margin-right:4px;color:var(--teal)"></i>+3 hr reading</div><div style="font-size:13px;color:var(--muted);margin-top:2px">Dinner &#183; due 10:14 PM</div></div>
+    <button class="btn-sm" onclick="go('s-history')">Log now</button>
+  </div>
+  <div class="sec">Today</div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="s-lbl">Meals logged</div><div class="s-val teal">3</div></div>
+    <div class="stat-card"><div class="s-lbl">Hypo events</div><div class="s-val green">0</div></div>
+    <div class="stat-card"><div class="s-lbl">Total insulin</div><div class="s-val teal">18u</div></div>
+    <div class="stat-card"><div class="s-lbl">Mean glucose</div><div class="s-val amber">151</div></div>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<div class="screen active" id="s-calc">
+  <div class="top-bar">
+    <h2>Pre-meal check</h2>
+    <div class="sub">Enter your meal &amp; glucose to get a dose estimate</div>
+  </div>
+
+  <!-- ── SECTION A: Glucose + Meal context ── -->
+  <div class="sec">Current glucose &amp; meal</div>
+  <div style="padding:0 14px 4px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px">
+    <div>
+      <div class="fl">Blood glucose (mg/dL)</div>
+      <input type="number" id="c-glucose" value="148" step="1" min="40" max="500" oninput="updateGTag()">
+    </div>
+    <div>
+      <div class="fl">Glucose trend</div>
+      <select id="c-trend" onchange="APP.trend=this.value">
+        <option value="rapid-fall">&#x21CA; Rapidly falling</option>
+        <option value="falling">&#x2193; Trending down</option>
+        <option value="stable" selected>&#x2192; Stable</option>
+        <option value="rising">&#x2191; Trending up</option>
+        <option value="rapid-rise">&#x21C8; Rapidly rising</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Meal type</div>
+      <select id="c-meal">
+        <option>Early snack</option><option>Breakfast</option>
+        <option>Mid-morning snack</option><option>Lunch</option>
+        <option>Evening snack</option><option selected>Dinner</option>
+        <option>Night snack</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Status</div>
+      <div style="display:flex;align-items:center;height:44px">
+        <span class="tag" id="c-gtag" style="font-size:13px"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION B: Food entry ── -->
+  <div class="sec">What are you eating?</div>
+  <div style="padding:0 14px 6px">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="c-food" placeholder="e.g. 2 chapati, dal, paneer, rice&#8230;" style="flex:1" autocomplete="off">
+      <button id="mic-btn" onclick="voiceInput()" style="padding:11px 13px;border-radius:10px;border:1px solid var(--border2);background:var(--teal-light);cursor:pointer;color:var(--teal);flex-shrink:0" aria-label="Voice input">
+        <i class="ti ti-microphone" style="font-size:20px"></i>
+      </button>
+    </div>
+    <!-- Quick add chips -->
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+      <button class="btn-sm" onclick="quickAdd('2 chapati',40,6,4,2)">2 chapati</button>
+      <button class="btn-sm" onclick="quickAdd('rice',45,3,1,0)">Rice</button>
+      <button class="btn-sm" onclick="quickAdd('dal',18,8,3,1)">Dal</button>
+      <button class="btn-sm" onclick="quickAdd('paneer',4,14,0,12)">Paneer</button>
+      <button class="btn-sm" onclick="quickAdd('idli x3',45,6,3,0)">Idli x3</button>
+      <button class="btn-sm" onclick="quickAdd('roti',20,3,2,1)">Roti</button>
+      <button class="btn-sm" onclick="quickAdd('sabzi',10,3,2,3)">Sabzi</button>
+      <button class="btn-sm" onclick="quickAdd('banana',27,1,3,0)">Banana</button>
+    </div>
+    <!-- Parsed food chips -->
+    <div class="chips" id="food-chips" style="margin-bottom:6px"></div>
+    <!-- Calculate carbs button -->
+    <button class="btn btn-s" id="btn-calc-food" onclick="calcFood()" style="font-size:15px;padding:12px">
+      <i class="ti ti-salad" style="margin-right:6px;vertical-align:-2px"></i>Calculate carbs &amp; macros
+    </button>
+  </div>
+
+  <!-- ── SECTION C: Macro boxes (populated after Calculate) ── -->
+  <div class="sec">Nutritional breakdown</div>
+  <div style="padding:0 14px 10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:6px">
+      <div style="text-align:center">
+        <div style="background:var(--teal-light);border:1px solid var(--teal);border-radius:10px;padding:10px 6px">
+          <div style="font-size:22px;font-weight:800;color:var(--teal)" id="m-carbs">—</div>
+          <div style="font-size:10px;color:var(--teal);font-weight:700;margin-top:2px">CARBS g</div>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 6px">
+          <div style="font-size:22px;font-weight:800;color:var(--amber)" id="m-protein">—</div>
+          <div style="font-size:10px;color:var(--muted);font-weight:700;margin-top:2px">PROTEIN g</div>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 6px">
+          <div style="font-size:22px;font-weight:800;color:var(--green)" id="m-fiber">—</div>
+          <div style="font-size:10px;color:var(--muted);font-weight:700;margin-top:2px">FIBER g</div>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 6px">
+          <div style="font-size:22px;font-weight:800;color:var(--red)" id="m-fat">—</div>
+          <div style="font-size:10px;color:var(--muted);font-weight:700;margin-top:2px">FAT g</div>
+        </div>
+      </div>
+    </div>
+    <!-- Edit overrides -->
+    <div id="macro-inputs" style="display:none;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+      <div><div class="fl" style="font-size:10px">Carbs</div><input type="number" id="i-carbs" value="0" min="0" style="text-align:center;padding:8px 4px;font-size:14px"></div>
+      <div><div class="fl" style="font-size:10px">Protein</div><input type="number" id="i-protein" value="0" min="0" style="text-align:center;padding:8px 4px;font-size:14px"></div>
+      <div><div class="fl" style="font-size:10px">Fiber</div><input type="number" id="i-fiber" value="0" min="0" style="text-align:center;padding:8px 4px;font-size:14px"></div>
+      <div><div class="fl" style="font-size:10px">Fat</div><input type="number" id="i-fat" value="0" min="0" style="text-align:center;padding:8px 4px;font-size:14px"></div>
+    </div>
+    <div id="macro-edit-link" style="display:none;margin-top:6px;text-align:right">
+      <span onclick="toggleMacroEdit()" style="font-size:13px;color:var(--teal);cursor:pointer;text-decoration:underline;text-underline-offset:2px">Edit values manually</span>
+    </div>
+  </div>
+
+  <!-- ── SECTION D: Recent insulin + activity ── -->
+  <div class="sec">Recent insulin &amp; activity</div>
+  <div style="padding:0 14px 10px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div>
+      <div class="fl">Last NovoRapid (units)</div>
+      <input type="number" id="c-lastdose" value="0" min="0" step="0.5">
+    </div>
+    <div>
+      <div class="fl">Taken how long ago</div>
+      <select id="c-lasthrs">
+        <option value="5">No recent dose</option>
+        <option value="0.5">Less than 1 hr</option>
+        <option value="1.5">1&#8211;2 hours ago</option>
+        <option value="2.5">2&#8211;3 hours ago</option>
+        <option value="3.5">3&#8211;4 hours ago</option>
+      </select>
+    </div>
+    <div style="grid-column:1/-1">
+      <div class="fl">Physical activity</div>
+      <select id="c-act">
+        <option value="none">None</option>
+        <option value="light-after">Light activity after meal</option>
+        <option value="mod-after">Moderate activity after meal</option>
+        <option value="intense-after">Intense activity after meal</option>
+        <option value="any-before">Activity before meal (within 1hr)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ── CALCULATE DOSE button ── -->
+  <div style="padding:0 14px 14px">
+    <button class="btn btn-p" onclick="calculateDose()" style="font-size:17px;padding:15px" id="btn-calc-dose">
+      <i class="ti ti-calculator" style="margin-right:8px;vertical-align:-2px"></i>Calculate dose
+    </button>
+  </div>
+
+  <!-- ── SECTION E: Dose result (inline, same screen) ── -->
+  <div id="dose-result-section" style="display:none">
+
+    <!-- Hypo block -->
+    <div id="hypo-block" style="display:none">
+      <div class="hypo-ban"><i class="ti ti-alert-triangle"></i><h3>Glucose too low &#8212; do not dose</h3><p>Treat hypoglycaemia first.<br>Take 15g fast-acting carbs (3 glucose tablets or 150ml juice).<br>Wait 15 minutes and recheck before taking any insulin.</p></div>
+    </div>
+
+    <!-- Normal dose result -->
+    <div id="dose-out">
+      <!-- Big dose display -->
+      <div id="dose-card" style="border-radius:16px;padding:20px 18px;margin:0 14px 12px;color:#fff;background:var(--teal)">
+        <div style="font-size:13px;opacity:.85;margin-bottom:4px;font-weight:600">Suggested NovoRapid dose</div>
+        <div style="display:flex;align-items:baseline;gap:10px;justify-content:space-between">
+          <div>
+            <div style="font-size:48px;font-weight:800;letter-spacing:-2px;line-height:1" id="res-range">—</div>
+            <div style="font-size:13px;opacity:.8;margin-top:4px" id="res-note"></div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:12px;opacity:.75;margin-bottom:4px">Based on</div>
+            <div style="font-size:13px;font-weight:600;opacity:.9" id="dose-basis"></div>
+          </div>
+        </div>
+        <!-- Details link -->
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;opacity:.8">Verify with your doctor settings before dosing</span>
+          <span onclick="toggleDetails()" id="details-link" style="font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;margin-left:12px">Details &#x25BE;</span>
+        </div>
+      </div>
+
+      <!-- Safety warnings -->
+      <div id="safety-warns"></div>
+
+      <!-- Details panel (hidden by default) -->
+      <div id="details-panel" style="display:none">
+        <div class="card" style="margin-top:0">
+          <div style="font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Dose calculation breakdown</div>
+          <div class="rrow"><span class="rlbl">Meal bolus (carbs &#247; ICR)</span><span class="rval pos" id="r-meal">&#8212;</span></div>
+          <div class="rrow"><span class="rlbl">Correction bolus</span><span class="rval" id="r-corr">&#8212;</span></div>
+          <div class="rrow"><span class="rlbl">Fiber reduction (slows absorption)</span><span class="rval" id="r-fiber">&#8212;</span></div>
+          <div class="rrow"><span class="rlbl">Active insulin (IOB)</span><span class="rval neg" id="r-iob">&#8212;</span></div>
+          <div class="rrow"><span class="rlbl">Glucose trend</span><span class="rval" id="r-trend">&#8212;</span></div>
+          <div class="rrow"><span class="rlbl">Meal type factor</span><span class="rval" id="r-mf">&#8212;</span></div>
+          <div class="rrow"><span class="rlbl">Activity modifier</span><span class="rval" id="r-act">&#8212;</span></div>
+          <div class="rrow" id="r-fat-row" style="display:none"><span class="rlbl">High-fat/protein (80% now)</span><span class="rval pos" id="r-fat">&#8212;</span></div>
+          <div class="rrow" style="border-top:2px solid var(--border);padding-top:10px;margin-top:4px">
+            <span class="rlbl" style="font-weight:700;color:var(--text)">Suggested range</span>
+            <span class="rval pos" style="font-size:16px" id="r-final">&#8212;</span>
+          </div>
+          <div style="margin-top:10px;padding:10px;background:var(--bg2);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.6">
+            <strong style="color:var(--text)">Profile used:</strong> Shilpa, 48F, 62.5kg &nbsp;&#183;&nbsp; ICR 1:<span id="d-icr">10</span>g &nbsp;&#183;&nbsp; ISF <span id="d-isf">45</span> mg/dL per unit
+          </div>
+        </div>
+        <div class="alert teal" style="margin-top:0">
+          <i class="ti ti-shield-check"></i><strong>Advisory only.</strong> GlucoWise estimates only. Always verify against your doctor-approved ICR and ISF before taking insulin.
+        </div>
+      </div>
+
+      <!-- Dose taken + save -->
+      <div style="padding:0 14px 6px">
+        <div class="fl">Units actually taken</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input type="number" id="dose-taken" step="0.5" min="0" placeholder="0" style="width:100px">
+          <span style="font-size:14px;color:var(--muted)">units NovoRapid</span>
+        </div>
+      </div>
+      <div style="padding:8px 14px 20px;display:grid;grid-template-columns:2fr 1fr;gap:10px">
+        <button class="btn btn-p" onclick="saveMeal()">Save &amp; set reminders</button>
+        <button class="btn btn-s" onclick="resetCalc()">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<!-- HISTORY -->
+<div class="screen" id="s-history">
+  <div class="top-bar"><h2>Insulin history</h2><div class="sub">All meal sessions</div></div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap;padding:10px 14px 4px">
+    <button class="tpill active" onclick="fHist(null,this)">All</button>
+    <button class="tpill" onclick="fHist('Breakfast',this)">Breakfast</button>
+    <button class="tpill" onclick="fHist('Lunch',this)">Lunch</button>
+    <button class="tpill" onclick="fHist('Dinner',this)">Dinner</button>
+  </div>
+  <div id="history-list" style="padding:4px 14px 0"></div>
+</div>
+
+<!-- GLUCOSE -->
+<div class="screen" id="s-glucose">
+  <div class="top-bar"><h2>Glucose history</h2><div class="sub">Last 7 days</div></div>
+  <div class="card" style="margin-top:14px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:10px">Time in range &#8212; 7 days</div>
+    <div class="tir-row">
+      <div class="tir-seg" style="width:4%;background:#991B1B"></div>
+      <div class="tir-seg" style="width:8%;background:#DC2626"></div>
+      <div class="tir-seg" style="width:74%;background:var(--teal-mid)">74%</div>
+      <div class="tir-seg" style="width:10%;background:var(--amber)"></div>
+      <div class="tir-seg" style="width:4%;background:#92400E"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;text-align:center">
+      <div><div style="font-size:24px;font-weight:800;color:var(--teal)">74%</div><div style="font-size:12px;color:var(--muted)">In range</div></div>
+      <div><div style="font-size:24px;font-weight:800;color:var(--red)">12%</div><div style="font-size:12px;color:var(--muted)">Low</div></div>
+      <div><div style="font-size:24px;font-weight:800;color:var(--amber)">14%</div><div style="font-size:12px;color:var(--muted)">High</div></div>
+    </div>
+  </div>
+  <div class="sec">Average 2hr post-meal by type</div>
+  <div class="card" style="padding-bottom:22px">
+    <div style="display:flex;align-items:flex-end;gap:10px;height:90px;margin-bottom:18px">
+      <div class="ccol"><div class="cval" style="color:var(--teal)">133</div><div class="cbar" style="height:52px;background:var(--teal-mid)"></div><div class="clbl">Snack</div></div>
+      <div class="ccol"><div class="cval" style="color:var(--amber)">184</div><div class="cbar" style="height:72px;background:var(--amber)"></div><div class="clbl">Breakfast</div></div>
+      <div class="ccol"><div class="cval" style="color:var(--teal)">146</div><div class="cbar" style="height:57px;background:var(--teal-mid)"></div><div class="clbl">Lunch</div></div>
+      <div class="ccol"><div class="cval" style="color:var(--amber)">176</div><div class="cbar" style="height:69px;background:var(--amber)"></div><div class="clbl">Dinner</div></div>
+    </div>
+    <div style="border-top:1px dashed var(--border);padding-top:5px;text-align:right"><span style="font-size:11px;color:var(--teal);font-weight:700">Target &#8804; 162 mg/dL</span></div>
+  </div>
+  <div class="sec">Recent readings</div>
+  <div style="padding:0 14px" id="glucose-list"></div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="screen" id="s-analytics">
+  <div class="top-bar"><h2>Analytics</h2><div class="sub">Patterns &amp; insights</div></div>
+  <div class="stat-grid" style="padding-top:14px">
+    <div class="stat-card"><div class="s-lbl">Mean glucose</div><div class="s-val amber">151<span style="font-size:14px"> mmol</span></div></div>
+    <div class="stat-card"><div class="s-lbl">Time in range</div><div class="s-val teal">74%</div></div>
+    <div class="stat-card"><div class="s-lbl">Hypo events</div><div class="s-val green">2 <span style="font-size:13px">/ month</span></div></div>
+    <div class="stat-card"><div class="s-lbl">Dose accuracy</div><div class="s-val teal">68%</div></div>
+  </div>
+  <div class="sec">Insights from your data</div>
+  <div class="ins warn"><i class="ti ti-trending-up"></i><strong>Breakfast doses may be insufficient.</strong> 4 of last 7 breakfasts show glucose above 180 mg/dL at 2 hours. Discuss your breakfast ICR with your endocrinologist.</div>
+  <div class="ins"><i class="ti ti-clock"></i><strong>Delayed rise after high-protein dinners.</strong> Paneer and dal meals show glucose climbing at 3&#8211;4 hours. An extended dose or post-meal recheck may help.</div>
+  <div class="ins good"><i class="ti ti-check"></i><strong>Excellent lunch control this week.</strong> All 5 lunches within target at 2 hours. Current lunch ICR appears well-calibrated.</div>
+  <div class="ins"><i class="ti ti-sunrise"></i><strong>Possible dawn phenomenon.</strong> 4 of last 7 fasting readings above 144 mg/dL. Your endocrinologist may wish to review your Lantus timing.</div>
+  <div class="sec">Dose accuracy by meal type</div>
+  <div class="card">
+    <div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px"><span>Breakfast</span><span style="color:var(--amber);font-weight:700">45%</span></div><div class="btrack"><div class="bfill amber" style="width:45%"></div></div></div>
+    <div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px"><span>Lunch</span><span style="color:var(--teal);font-weight:700">82%</span></div><div class="btrack"><div class="bfill teal" style="width:82%"></div></div></div>
+    <div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px"><span>Dinner</span><span style="color:var(--amber);font-weight:700">61%</span></div><div class="btrack"><div class="bfill amber" style="width:61%"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px"><span>Snacks</span><span style="color:var(--teal);font-weight:700">78%</span></div><div class="btrack"><div class="bfill teal" style="width:78%"></div></div></div>
+  </div>
+  <div class="sec">Weekly TIR trend</div>
+  <div class="card" style="padding-bottom:22px">
+    <div style="display:flex;gap:8px;align-items:flex-end;height:80px;margin-bottom:18px">
+      <div class="ccol"><div class="cval" style="color:var(--muted)">68%</div><div class="cbar" style="height:54px;background:var(--teal-mid);opacity:.5"></div><div class="clbl">Wk 1</div></div>
+      <div class="ccol"><div class="cval" style="color:var(--muted)">71%</div><div class="cbar" style="height:57px;background:var(--teal-mid);opacity:.65"></div><div class="clbl">Wk 2</div></div>
+      <div class="ccol"><div class="cval" style="color:var(--muted)">70%</div><div class="cbar" style="height:56px;background:var(--teal-mid);opacity:.8"></div><div class="clbl">Wk 3</div></div>
+      <div class="ccol"><div class="cval" style="color:var(--teal);font-weight:800">74%</div><div class="cbar" style="height:59px;background:var(--teal-mid)"></div><div class="clbl">Wk 4</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--teal);text-align:center;font-weight:700">&#x2191; TIR improving over 4 weeks</div>
+  </div>
+  <div style="padding:0 14px 16px"><button class="btn btn-s" onclick="showToast('Generating 30-day PDF report\u2026')"><i class="ti ti-file-export" style="margin-right:8px;vertical-align:-2px"></i>Export doctor report (PDF)</button></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="s-settings">
+  <div class="top-bar"><h2>Doctor settings</h2><div class="sub">Protected &#8212; verify with your endocrinologist</div></div>
+  <div class="alert amber" style="margin-top:14px"><i class="ti ti-lock"></i><strong> Doctor-approved values only.</strong> Do not change without medical guidance. Every change is logged with date and time.</div>
+  <div class="sec">Patient profile</div>
+  <div class="card">
+    <div class="srow"><div><div class="sl">Weight</div></div><div style="display:flex;align-items:center;gap:6px"><input type="number" id="s-weight" value="62.5" step="0.5" min="30" max="200"><span style="font-size:13px;color:var(--muted)">kg</span></div></div>
+    <div class="srow"><div><div class="sl">Age</div></div><div style="display:flex;align-items:center;gap:6px"><input type="number" id="s-age" value="48" min="10" max="100"><span style="font-size:13px;color:var(--muted)">years</span></div></div>
+    <div class="srow"><div class="sl">Gender</div><span class="sv">Female</span></div>
+    <div class="srow"><div class="sl">T1D diagnosis</div><span class="sv">2004 &#183; 20 years</span></div>
+  </div>
+  <div class="sec">Dose calculation parameters</div>
+  <div class="card">
+    <div class="srow"><div><div class="sl">Insulin-to-carb ratio (ICR)</div><div class="ss">Grams carbs per 1 unit of insulin</div></div><div style="display:flex;align-items:center;gap:5px"><span style="font-size:13px;color:var(--muted)">1 :</span><input type="number" id="s-icr" value="10" min="4" max="30"><span style="font-size:13px;color:var(--muted)">g</span></div></div>
+    <div class="srow"><div><div class="sl">Sensitivity factor (ISF)</div><div class="ss">mg/dL drop per 1 unit</div></div><div style="display:flex;align-items:center;gap:5px"><input type="number" id="s-isf" value="2.5" step="1" min="1" max="10"><span style="font-size:13px;color:var(--muted)">mg/dL</span></div></div>
+    <div class="srow"><div class="sl">Target pre-meal glucose</div><span class="sv">99 &#8211; 126 mg/dL</span></div>
+    <div class="srow"><div class="sl">Target 2hr post-meal</div><span class="sv">&#8804; 162 mg/dL</span></div>
+    <div class="srow"><div><div class="sl">Breakfast resistance uplift</div><div class="ss">Added % for dawn phenomenon</div></div><div style="display:flex;align-items:center;gap:5px"><input type="number" id="s-bkfst" value="15" min="0" max="40"><span style="font-size:13px;color:var(--muted)">%</span></div></div>
+    <div class="srow"><div><div class="sl">IOB duration</div><div class="ss">NovoRapid active insulin time</div></div><span class="sv">4.0 hours</span></div>
+  </div>
+  <div class="sec">Insulin regimen</div>
+  <div class="card">
+    <div class="srow"><div class="sl">Bolus insulin</div><span class="sv">NovoRapid</span></div>
+    <div class="srow"><div class="sl">Basal insulin</div><span class="sv">Lantus</span></div>
+  </div>
+  <div class="sec">Doctor &amp; clinic</div>
+  <div class="card" style="margin-bottom:8px">
+    <div class="srow"><div class="sl">Doctor name</div><input type="text" id="s-doc" placeholder="Dr. Name" style="width:160px;text-align:right"></div>
+    <div class="srow"><div class="sl">Last updated</div><span class="sv" id="s-ts" style="font-size:13px;color:var(--muted)">Not yet saved</span></div>
+  </div>
+  <div style="padding:0 14px 16px"><button class="btn btn-p" onclick="saveSettings()">Save settings</button></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <button class="nav-btn" id="nb-home" onclick="go('s-home')"><i class="ti ti-home"></i><span>Home</span></button>
+  <button class="nav-btn active" id="nb-calc" onclick="go('s-calc')"><i class="ti ti-calculator"></i><span>Dose</span></button>
+  <button class="nav-btn" id="nb-history" onclick="go('s-history')"><i class="ti ti-list"></i><span>History</span></button>
+  <button class="nav-btn" id="nb-glucose" onclick="go('s-glucose')"><i class="ti ti-chart-line"></i><span>Glucose</span></button>
+  <button class="nav-btn" id="nb-analytics" onclick="go('s-analytics')"><i class="ti ti-chart-bar"></i><span>Trends</span></button>
+  <button class="nav-btn" id="nb-settings" onclick="go('s-settings')"><i class="ti ti-settings"></i><span>Settings</span></button>
+</nav>
+
+<div class="toast" id="toast"></div>
+</div>
+<script>
+const SIDs = ['s-home','s-calc','s-history','s-glucose','s-analytics','s-settings'];
+const NIDs  = ['nb-home','nb-calc','nb-history','nb-glucose','nb-analytics','nb-settings'];
+
+const APP = {
+  trend: 'stable',
+  foods: [],
+  parsedMacros: {c:0,p:0,fi:0,f:0},
+  S: {icr:10, isf:45, target:108, bkfst:15, maxWarn:15},
+  sessions: [
+    {id:1,date:'Jun 20',time:'7:14 PM',meal:'Dinner',food:'Dal, rice, paneer curry',carbs:75,prot:true,fat:true,pre:153,rec:[6.5,7.5],taken:7,post:{1:166,2:176,3:187},out:'high'},
+    {id:2,date:'Jun 20',time:'1:05 PM',meal:'Lunch',food:'Chicken biryani, raita',carbs:65,prot:true,fat:false,pre:140,rec:[6.5,7.5],taken:7,post:{1:146,2:155,3:null},out:'ok'},
+    {id:3,date:'Jun 20',time:'8:32 AM',meal:'Breakfast',food:'Idli x4, sambar, chutney',carbs:60,prot:false,fat:false,pre:115,rec:[7.5,8.5],taken:7,post:{1:194,2:202,3:173},out:'high'},
+    {id:4,date:'Jun 19',time:'8:05 PM',meal:'Dinner',food:'Roti x2, sabzi, dal',carbs:60,prot:false,fat:false,pre:130,rec:[5.5,6.5],taken:6,post:{1:149,2:160,3:null},out:'ok'},
+    {id:5,date:'Jun 19',time:'1:20 PM',meal:'Lunch',food:'Rajma chawal, curd',carbs:70,prot:true,fat:false,pre:122,rec:[6,7],taken:6,post:{1:140,2:148,3:null},out:'ok'},
+    {id:6,date:'Jun 19',time:'8:15 AM',meal:'Breakfast',food:'Poha, green chutney',carbs:42,prot:false,fat:false,pre:106,rec:[5.5,6.5],taken:6,post:{1:176,2:191,3:null},out:'high'},
+    {id:7,date:'Jun 18',time:'7:50 PM',meal:'Dinner',food:'Palak paneer, naan, dal makhani',carbs:85,prot:true,fat:true,pre:146,rec:[7,8.5],taken:8,post:{1:164,2:173,3:202},out:'high'},
+    {id:8,date:'Jun 18',time:'12:45 PM',meal:'Lunch',food:'Chapati x2, chhole, salad',carbs:58,prot:true,fat:false,pre:119,rec:[5.5,6.5],taken:6,post:{1:133,2:146,3:null},out:'ok'},
+  ]
+};
+
+// Food database: {c:carbs, p:protein, fi:fiber, f:fat} per serving
+const FDB = {
+  'chapati':{c:20,p:3,fi:2,f:1}, 'roti':{c:20,p:3,fi:2,f:1},
+  'naan':{c:35,p:5,fi:1,f:4},    'paratha':{c:30,p:4,fi:2,f:6},
+  'puri':{c:20,p:3,fi:1,f:5},    'bhatura':{c:40,p:6,fi:1,f:8},
+  'bread':{c:25,p:4,fi:2,f:1},
+  'idli':{c:15,p:2,fi:1,f:0},    'dosa':{c:30,p:3,fi:1,f:2},
+  'uttapam':{c:35,p:4,fi:2,f:3}, 'upma':{c:30,p:4,fi:2,f:3},
+  'poha':{c:36,p:3,fi:2,f:2},    'appam':{c:32,p:3,fi:1,f:1},
+  'sambar':{c:10,p:4,fi:3,f:1},  'rasam':{c:5,p:1,fi:1,f:0},
+  'rice':{c:45,p:3,fi:1,f:0},    'biryani':{c:55,p:12,fi:2,f:8},
+  'pulao':{c:48,p:5,fi:1,f:4},   'khichdi':{c:40,p:8,fi:3,f:2},
+  'dal':{c:18,p:8,fi:3,f:1},     'daal':{c:18,p:8,fi:3,f:1},
+  'rajma':{c:35,p:9,fi:6,f:1},   'chhole':{c:28,p:8,fi:5,f:2},
+  'chole':{c:28,p:8,fi:5,f:2},   'moong':{c:20,p:7,fi:4,f:1},
+  'sabzi':{c:10,p:3,fi:2,f:3},   'sabji':{c:10,p:3,fi:2,f:3},
+  'aloo':{c:25,p:2,fi:2,f:0},    'potato':{c:25,p:2,fi:2,f:0},
+  'palak':{c:5,p:3,fi:2,f:0},    'gobi':{c:8,p:2,fi:2,f:0},
+  'bhindi':{c:7,p:2,fi:3,f:0},   'matar':{c:14,p:5,fi:4,f:0},
+  'carrot':{c:10,p:1,fi:3,f:0},  'onion':{c:10,p:1,fi:2,f:0},
+  'salad':{c:5,p:1,fi:2,f:0},    'tomato':{c:5,p:1,fi:1,f:0},
+  'paneer':{c:4,p:14,fi:0,f:12}, 'tofu':{c:3,p:8,fi:1,f:4},
+  'curd':{c:8,p:6,fi:0,f:3},     'yogurt':{c:8,p:6,fi:0,f:3},
+  'raita':{c:8,p:5,fi:0,f:2},    'milk':{c:12,p:8,fi:0,f:4},
+  'lassi':{c:24,p:8,fi:0,f:3},   'chai':{c:8,p:2,fi:0,f:2},
+  'cheese':{c:2,p:7,fi:0,f:8},   'butter':{c:0,p:0,fi:0,f:12},
+  'ghee':{c:0,p:0,fi:0,f:14},
+  'chicken':{c:0,p:25,fi:0,f:3}, 'mutton':{c:0,p:22,fi:0,f:8},
+  'fish':{c:0,p:22,fi:0,f:2},    'egg':{c:1,p:6,fi:0,f:5},
+  'prawn':{c:1,p:18,fi:0,f:1},
+  'samosa':{c:28,p:4,fi:2,f:10}, 'vada':{c:22,p:4,fi:2,f:8},
+  'pakora':{c:20,p:3,fi:1,f:9},  'chaat':{c:30,p:5,fi:3,f:5},
+  'jalebi':{c:50,p:1,fi:0,f:8},  'halwa':{c:45,p:3,fi:1,f:12},
+  'kheer':{c:35,p:6,fi:0,f:6},   'ladoo':{c:38,p:4,fi:2,f:10},
+  'banana':{c:27,p:1,fi:3,f:0},  'mango':{c:30,p:1,fi:2,f:0},
+  'apple':{c:25,p:0,fi:4,f:0},   'orange':{c:18,p:1,fi:3,f:0},
+  'grapes':{c:17,p:1,fi:1,f:0},  'papaya':{c:12,p:1,fi:2,f:0},
+  'guava':{c:14,p:2,fi:5,f:1},
+  'pasta':{c:55,p:7,fi:2,f:1},   'pizza':{c:70,p:12,fi:2,f:14},
+  'burger':{c:45,p:15,fi:1,f:16},'sandwich':{c:30,p:10,fi:2,f:8},
+  'oats':{c:27,p:5,fi:4,f:3},    'soup':{c:10,p:3,fi:1,f:2},
+  'noodles':{c:50,p:6,fi:2,f:4}, 'cornflakes':{c:40,p:3,fi:1,f:0},
+  'juice':{c:25,p:0,fi:0,f:0},
+};
+
+const ALIASES = {
+  'chapatti':'chapati','chappati':'chapati','rotis':'roti','rotli':'roti',
+  'dhal':'dal','lentils':'dal','moong dal':'dal','toor dal':'dal','urad dal':'dal',
+  'panir':'paneer','cottage cheese':'paneer',
+  'aaloo':'aloo','alu':'aloo','batata':'aloo',
+  'gobhi':'gobi','cauliflower':'gobi','cabbage':'gobi',
+  'sabjee':'sabzi','sabzee':'sabzi','curry':'sabzi','subji':'sabzi',
+  'eggs':'egg','omelette':'egg','boiled egg':'egg','omelet':'egg',
+  'dahi':'curd','yoghurt':'yogurt',
+  'maggi':'noodles','noodle':'noodles',
+  'choley':'chhole','chhola':'chhole','chana':'chhole','chana masala':'chhole',
+  'rajmah':'rajma','kidney beans':'rajma',
+  'idlis':'idli','idlies':'idli',
+  'parantha':'paratha','parotha':'paratha',
+  'spinach':'palak','methi':'palak',
+  'bhajia':'pakora','fritter':'pakora',
+};
+
+// ── Navigation ──────────────────────────────────────────────
+function go(sid) {
+  SIDs.forEach(function(id) {
+    var e = document.getElementById(id);
+    if (e) e.classList.remove('active');
+  });
+  NIDs.forEach(function(id) {
+    var e = document.getElementById(id);
+    if (e) e.classList.remove('active');
+  });
+  var s = document.getElementById(sid);
+  if (s) { s.classList.add('active'); s.scrollTop = 0; }
+  var idx = SIDs.indexOf(sid);
+  if (idx >= 0) {
+    var nb = document.getElementById(NIDs[idx]);
+    if (nb) nb.classList.add('active');
+  }
+  if (sid === 's-history') renderHistory(null);
+  if (sid === 's-glucose') renderGlucose();
+  updateGreeting();
+}
+
+function updateGreeting() {
+  var h = new Date().getHours();
+  var g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  var e = document.getElementById('home-greeting');
+  if (e) e.textContent = g + ', Shilpa';
+}
+
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2800);
+}
+
+// ── Glucose tag ─────────────────────────────────────────────
+function updateGTag() {
+  var g = parseFloat(document.getElementById('c-glucose').value);
+  var el = document.getElementById('c-gtag');
+  if (!el) return;
+  if (isNaN(g) || g <= 0) {
+    el.textContent = 'Enter glucose'; el.className = 'tag';
+  } else if (g < 72) {
+    el.textContent = '\u26a0 Hypo \u2014 do not dose'; el.className = 'tag red';
+  } else if (g < 99) {
+    el.textContent = '\u2193 Below target'; el.className = 'tag amber';
+  } else if (g <= 126) {
+    el.textContent = '\u2713 In target'; el.className = 'tag green';
+  } else if (g <= 180) {
+    el.textContent = '\u2191 Above target'; el.className = 'tag amber';
+  } else {
+    el.textContent = '\u21c8 High \u2014 correction needed'; el.className = 'tag red';
+  }
+}
+
+// ── Food parsing ─────────────────────────────────────────────
+// Pure: parses text, returns array of food objects, NEVER touches APP.foods
+function parseFoodText(raw) {
+  var result = [];
+  if (!raw || !raw.trim()) return result;
+  // normalise
+  raw = raw.toLowerCase().trim()
+    .replace(/\band\b/gi, ',')
+    .replace(/[+&]/g, ',');
+  var items = raw.split(',');
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i].trim();
+    if (!item) continue;
+    // extract leading number e.g. "2 chapati"
+    var numMatch = item.match(/^(\d+\.?\d*)\s+(.*)/);
+    var qty  = numMatch ? parseFloat(numMatch[1]) : 1;
+    var text = numMatch ? numMatch[2].trim() : item;
+    // alias
+    if (ALIASES[text]) text = ALIASES[text];
+    // exact match
+    var key = null;
+    if (FDB[text]) {
+      key = text;
+    }
+    // starts-with match
+    if (!key) {
+      var keys = Object.keys(FDB);
+      for (var k = 0; k < keys.length; k++) {
+        if (text.length >= 3 && (keys[k].indexOf(text) === 0 || text.indexOf(keys[k]) === 0)) {
+          key = keys[k]; break;
+        }
+      }
+    }
+    // substring match
+    if (!key) {
+      var keys2 = Object.keys(FDB);
+      for (var k2 = 0; k2 < keys2.length; k2++) {
+        if (text.length >= 4 && (keys2[k2].indexOf(text) >= 0 || text.indexOf(keys2[k2]) >= 0)) {
+          key = keys2[k2]; break;
+        }
+      }
+    }
+    if (key) {
+      var fd = FDB[key];
+      result.push({
+        name: key + (qty !== 1 ? ' \u00d7' + qty : ''),
+        c:  Math.round(fd.c  * qty),
+        p:  Math.round(fd.p  * qty),
+        fi: Math.round(fd.fi * qty),
+        f:  Math.round(fd.f  * qty)
+      });
+    }
+  }
+  return result;
+}
+
+function updateMacroDisplay() {
+  var tot = {c:0, p:0, fi:0, f:0};
+  APP.foods.forEach(function(fd) {
+    tot.c += fd.c; tot.p += fd.p; tot.fi += fd.fi; tot.f += fd.f;
+  });
+  APP.parsedMacros = tot;
+  document.getElementById('m-carbs').textContent   = tot.c || 0;
+  document.getElementById('m-protein').textContent = tot.p || 0;
+  document.getElementById('m-fiber').textContent   = tot.fi || 0;
+  document.getElementById('m-fat').textContent     = tot.f || 0;
+  document.getElementById('i-carbs').value   = tot.c;
+  document.getElementById('i-protein').value = tot.p;
+  document.getElementById('i-fiber').value   = tot.fi;
+  document.getElementById('i-fat').value     = tot.f;
+  renderChips();
+}
+
+// Quick-add buttons (name, carbs, protein, fiber, fat)
+function quickAdd(name, c, p, fi, f) {
+  APP.foods.push({name:name, c:c, p:p, fi:fi, f:f});
+  updateMacroDisplay();
+  document.getElementById('macro-edit-link').style.display = 'block';
+  showToast(name + ' added');
+}
+
+// Calculate button: merge typed text + existing quick-adds
+function calcFood() {
+  var foodText = document.getElementById('c-food').value.trim();
+  // parse text input and merge into APP.foods (avoid duplicates by name)
+  var parsed = parseFoodText(foodText);
+  parsed.forEach(function(item) {
+    var exists = APP.foods.some(function(f) { return f.name === item.name; });
+    if (!exists) APP.foods.push(item);
+  });
+
+  if (APP.foods.length === 0) {
+    if (!foodText) {
+      showToast('Tap a food button or type a meal above, then press Calculate');
+      return;
+    }
+    // Fallback estimate
+    APP.foods.push({name: foodText, c:45, p:8, fi:3, f:6});
+    showToast('Foods not recognised \u2014 using estimate. Try: chapati, dal, rice, paneer');
+  }
+
+  updateMacroDisplay();
+  document.getElementById('macro-edit-link').style.display = 'block';
+
+  // pulse carbs box
+  var cb = document.getElementById('m-carbs');
+  if (cb) {
+    cb.style.transition = 'transform .18s';
+    cb.style.transform = 'scale(1.15)';
+    setTimeout(function() { cb.style.transform = 'scale(1)'; }, 200);
+  }
+  showToast('\u2713 Macros calculated! Now tap \u201cCalculate dose\u201d');
+}
+
+function renderChips() {
+  var e = document.getElementById('food-chips');
+  if (!e) return;
+  var html = '';
+  APP.foods.forEach(function(fd, i) {
+    html += '<span class="chip">' + fd.name +
+      ' <span class="cv">' + fd.c + 'g</span>' +
+      '<span class="chip-x" onclick="removeChip(' + i + ')"><i class="ti ti-x" style="font-size:15px"></i></span></span>';
+  });
+  e.innerHTML = html;
+}
+
+function removeChip(i) {
+  APP.foods.splice(i, 1);
+  updateMacroDisplay();
+  if (APP.foods.length === 0) {
+    document.getElementById('macro-edit-link').style.display = 'none';
+  }
+}
+
+var macroEditOpen = false;
+function toggleMacroEdit() {
+  macroEditOpen = !macroEditOpen;
+  var el = document.getElementById('macro-inputs');
+  el.style.display = macroEditOpen ? 'grid' : 'none';
+  var lnk = document.querySelector('#macro-edit-link span');
+  if (lnk) lnk.textContent = macroEditOpen ? 'Hide edit' : 'Edit values manually';
+}
+
+// ── Voice input ──────────────────────────────────────────────
+function voiceInput() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var btn = document.getElementById('mic-btn');
+  if (!SR) {
+    // No speech API — load demo
+    document.getElementById('c-food').value = '2 chapati, dal, paneer, rice';
+    showToast('Voice not available \u2014 loaded sample meal');
+    calcFood();
+    return;
+  }
+  var rec = new SR();
+  rec.lang = 'en-IN';
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  if (btn) { btn.style.background = '#fee2e2'; btn.style.color = '#991b1b'; }
+  showToast('\uD83C\uDFA4 Listening\u2026 speak your meal');
+  rec.onresult = function(e) {
+    var t = e.results[0][0].transcript;
+    document.getElementById('c-food').value = t;
+    if (btn) { btn.style.background = ''; btn.style.color = ''; }
+    showToast('\u2713 Heard: "' + t + '"');
+    calcFood();
+  };
+  rec.onerror = function(ev) {
+    if (btn) { btn.style.background = ''; btn.style.color = ''; }
+    if (ev.error === 'not-allowed') {
+      showToast('Mic permission denied \u2014 please allow in browser settings');
+    } else {
+      document.getElementById('c-food').value = '2 chapati, dal, paneer, rice';
+      showToast('Voice error \u2014 loaded sample meal');
+      calcFood();
+    }
+  };
+  rec.onend = function() {
+    if (btn) { btn.style.background = ''; btn.style.color = ''; }
+  };
+  rec.start();
+}
+
+// ── IOB decay curve ──────────────────────────────────────────
+function calcIOB(dose, hrs) {
+  if (hrs >= 4) return 0;
+  var r = Math.max(0, 1 - (hrs / 4));
+  return Math.round(dose * r * r * 10) / 10;
+}
+
+// ── Dose calculation ─────────────────────────────────────────
+function calculateDose() {
+  var g = parseFloat(document.getElementById('c-glucose').value) || 0;
+  var trend = document.getElementById('c-trend').value;
+
+  // Read macros from display boxes (or edit inputs if open)
+  var carbs, protein, fiber, fat;
+  if (macroEditOpen) {
+    carbs   = parseFloat(document.getElementById('i-carbs').value)   || 0;
+    protein = parseFloat(document.getElementById('i-protein').value)  || 0;
+    fiber   = parseFloat(document.getElementById('i-fiber').value)    || 0;
+    fat     = parseFloat(document.getElementById('i-fat').value)      || 0;
+  } else {
+    carbs   = parseFloat(document.getElementById('m-carbs').textContent)   || 0;
+    protein = parseFloat(document.getElementById('m-protein').textContent)  || 0;
+    fiber   = parseFloat(document.getElementById('m-fiber').textContent)    || 0;
+    fat     = parseFloat(document.getElementById('m-fat').textContent)      || 0;
+  }
+
+  if (carbs === 0 && protein === 0 && fat === 0) {
+    showToast('Please add food and press \u201cCalculate carbs & macros\u201d first');
+    document.getElementById('c-food').focus();
+    return;
+  }
+
+  var ld   = parseFloat(document.getElementById('c-lastdose').value) || 0;
+  var lh   = parseFloat(document.getElementById('c-lasthrs').value)  || 5;
+  var meal = document.getElementById('c-meal').value;
+  var act  = document.getElementById('c-act').value;
+  var S    = APP.S;
+
+  // Show result section
+  var rs = document.getElementById('dose-result-section');
+  rs.style.display = 'block';
+  document.getElementById('hypo-block').style.display = 'none';
+  document.getElementById('dose-out').style.display   = 'none';
+
+  // Safety rule S1: Hypo block
+  if (g > 0 && g < 72) {
+    document.getElementById('hypo-block').style.display = 'block';
+    setTimeout(function() { rs.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 80);
+    return;
+  }
+
+  document.getElementById('dose-out').style.display = 'block';
+
+  // Step 1: Meal bolus (net carbs after fiber)
+  var netCarbs = Math.max(0, carbs - Math.round(fiber * 0.5));
+  var mb = Math.round((netCarbs / S.icr) * 10) / 10;
+
+  // Step 2: Correction bolus
+  var cb = g > S.target ? Math.round(((g - S.target) / S.isf) * 10) / 10 : 0;
+
+  // Step 3: IOB deduction
+  var ib = calcIOB(ld, lh);
+
+  // Step 4: Trend adjustment
+  var trendMap = {'rapid-fall':-1.5,'falling':-0.75,'stable':0,'rising':0.75,'rapid-rise':1.5};
+  var ta = trendMap[trend] || 0;
+
+  // Step 5: Meal type factor
+  var mfMap = {'Breakfast':S.bkfst/100,'Dinner':0.07,'Early snack':-0.12,
+               'Night snack':-0.15,'Evening snack':-0.07,'Lunch':0,'Mid-morning snack':0};
+  var mfp = mfMap[meal] || 0;
+  var mf  = Math.round((mb + cb) * mfp * 10) / 10;
+
+  // Step 6: Activity
+  var actMap = {'none':0,'light-after':-0.10,'mod-after':-0.20,'intense-after':-0.35,'any-before':-0.15};
+  var aa = Math.round((mb + cb) * (actMap[act] || 0) * 10) / 10;
+
+  var raw = Math.max(0, Math.round((mb + cb - ib + ta + mf + aa) * 10) / 10);
+
+  // Step 7: High fat/protein split
+  var hiFat  = fat > 15;
+  var hiProt = protein > 20;
+  var sfr = hiFat || hiProt;
+  var doseNow = sfr ? Math.round(raw * 0.8 * 10) / 10 : raw;
+  var lo = Math.max(0, Math.round((doseNow - 0.5) * 2) / 2);
+  var hi = Math.round((doseNow + 0.5) * 2) / 2;
+
+  // ── Populate result card ──
+  document.getElementById('res-range').textContent = lo + ' \u2013 ' + hi + ' units';
+  document.getElementById('res-note').textContent  = sfr
+    ? '80% now \u00b7 recheck BG at 3\u20134 hrs for remaining'
+    : 'Suggested range \u2014 confirm with your doctor settings';
+  document.getElementById('dose-card').style.background =
+    (g > 0 && g < 99) ? 'var(--amber)' : 'var(--teal)';
+  document.getElementById('dose-basis').innerHTML =
+    carbs + 'g carbs &nbsp;\u00b7&nbsp; ' + protein + 'g protein &nbsp;\u00b7&nbsp; BG ' + (g||'?') + ' mg/dL';
+
+  // ── Breakdown ──
+  function fmt(v) { return (v >= 0 ? '+' : '') + v.toFixed(1) + 'u'; }
+  function cls(v) { return v > 0 ? 'rval pos' : v < 0 ? 'rval neg' : 'rval neu'; }
+
+  document.getElementById('r-meal').textContent  = '+' + mb.toFixed(1) + 'u (' + netCarbs + 'g net carbs \u00f7 ICR ' + S.icr + ')';
+  document.getElementById('r-meal').className    = 'rval pos';
+  document.getElementById('r-fiber').textContent = fiber > 0
+    ? '\u2212' + Math.round(fiber*0.5/S.icr*10)/10 + 'u (' + fiber + 'g fiber halves carb absorption)'
+    : '0u';
+  document.getElementById('r-fiber').className   = fiber > 0 ? 'rval neg' : 'rval neu';
+  document.getElementById('r-corr').textContent  = cb > 0
+    ? '+' + cb.toFixed(1) + 'u (BG ' + g + ' \u2212 target ' + S.target + ' \u00f7 ' + S.isf + ')'
+    : '0u (BG at or below target)';
+  document.getElementById('r-corr').className    = cls(cb);
+  document.getElementById('r-iob').textContent   = ib > 0
+    ? '\u2212' + ib.toFixed(1) + 'u (' + ld + 'u taken ' + lh + 'h ago)'
+    : '0u';
+  document.getElementById('r-iob').className     = ib > 0 ? 'rval neg' : 'rval neu';
+  var trendLabels = {'rapid-fall':'rapidly falling','falling':'trending down',
+                     'stable':'stable','rising':'trending up','rapid-rise':'rapidly rising'};
+  document.getElementById('r-trend').textContent = fmt(ta) + ' (' + (trendLabels[trend]||trend) + ')';
+  document.getElementById('r-trend').className   = cls(ta);
+  document.getElementById('r-mf').textContent    = fmt(mf) + ' (' + meal + (mfp !== 0 ? ', ' + Math.round(mfp*100) + '%' : '') + ')';
+  document.getElementById('r-mf').className      = cls(mf);
+  document.getElementById('r-act').textContent   = aa !== 0 ? fmt(aa) + ' (' + act.replace(/-/g,' ') + ')' : '0u (none)';
+  document.getElementById('r-act').className     = cls(aa);
+  document.getElementById('r-fat-row').style.display = sfr ? 'flex' : 'none';
+  if (sfr) document.getElementById('r-fat').textContent = doseNow.toFixed(1) + 'u (raw ' + raw.toFixed(1) + 'u \u00d7 80%)';
+  document.getElementById('r-final').textContent = lo + ' \u2013 ' + hi + ' units NovoRapid';
+  document.getElementById('d-icr').textContent   = S.icr;
+  document.getElementById('d-isf').textContent   = S.isf;
+
+  // ── Warnings ──
+  var w = '';
+  if (g >= 72 && g < 99)
+    w += '<div class="alert amber"><i class="ti ti-alert-triangle"></i> <strong>Low-normal glucose.</strong> Consider eating first before taking insulin.</div>';
+  if (ib >= 2 && g <= 126)
+    w += '<div class="alert amber"><i class="ti ti-alert-triangle"></i> <strong>Significant IOB (' + ib.toFixed(1) + 'u).</strong> Insulin stacking risk \u2014 deduction applied.</div>';
+  if (trend === 'rapid-fall')
+    w += '<div class="alert red"><i class="ti ti-alert-triangle"></i> <strong>Glucose falling rapidly.</strong> Dose reduced. Treat hypo if BG drops below 72.</div>';
+  if (doseNow >= S.maxWarn)
+    w += '<div class="alert amber"><i class="ti ti-alert-triangle"></i> <strong>Dose above ' + S.maxWarn + 'u.</strong> Verify with your doctor.</div>';
+  if (sfr)
+    w += '<div class="alert teal"><i class="ti ti-info-circle"></i> <strong>High ' + (hiFat ? 'fat' : 'protein') + ' meal.</strong> ' + lo + '\u2013' + hi + 'u now (80%). Recheck at 3\u20134 hours.</div>';
+  document.getElementById('safety-warns').innerHTML = w;
+
+  setTimeout(function() { rs.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 80);
+}
+
+var detailsOpen = false;
+function toggleDetails() {
+  detailsOpen = !detailsOpen;
+  document.getElementById('details-panel').style.display = detailsOpen ? 'block' : 'none';
+  document.getElementById('details-link').textContent    = detailsOpen ? 'Hide details \u25b4' : 'Details \u25be';
+}
+
+function resetCalc() {
+  APP.foods = [];
+  APP.parsedMacros = {c:0, p:0, fi:0, f:0};
+  renderChips();
+  document.getElementById('c-food').value = '';
+  ['m-carbs','m-protein','m-fiber','m-fat'].forEach(function(id) {
+    document.getElementById(id).textContent = '0';
+  });
+  ['i-carbs','i-protein','i-fiber','i-fat'].forEach(function(id) {
+    document.getElementById(id).value = 0;
+  });
+  document.getElementById('macro-edit-link').style.display    = 'none';
+  document.getElementById('macro-inputs').style.display       = 'none';
+  document.getElementById('dose-result-section').style.display = 'none';
+  document.getElementById('details-panel').style.display       = 'none';
+  var dt = document.getElementById('dose-taken');
+  if (dt) dt.value = '';
+  document.getElementById('c-lastdose').value = '0';
+  detailsOpen = false; macroEditOpen = false;
+  updateGTag();
+  document.getElementById('s-calc').scrollTop = 0;
+}
+
+function saveMeal() {
+  var t = parseFloat(document.getElementById('dose-taken').value) || 0;
+  if (!t) { showToast('Enter units actually taken first'); return; }
+  showToast('Saved \u00b7 Reminders set for +1h, +2h, +3h');
+  setTimeout(function() { resetCalc(); go('s-home'); }, 1200);
+}
+
+// ── History ──────────────────────────────────────────────────
+function renderHistory(filter) {
+  var el = document.getElementById('history-list');
+  if (!el) return;
+  var ss = filter ? APP.sessions.filter(function(s) { return s.meal === filter; }) : APP.sessions;
+  var grouped = {};
+  ss.forEach(function(s) {
+    if (!grouped[s.date]) grouped[s.date] = [];
+    grouped[s.date].push(s);
+  });
+  var html = '';
+  Object.keys(grouped).sort(function(a,b){return b.localeCompare(a);}).forEach(function(date) {
+    html += '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;padding:14px 0 5px">' + date + '</div>';
+    grouped[date].forEach(function(s) {
+      var dc = s.out === 'ok' ? 'green' : s.out === 'high' ? 'amber' : 'red';
+      var p2 = s.post[2] ? s.post[2] + ' mg/dL' : 'pending';
+      var fl = [s.prot?'High protein':'', s.fat?'High fat':''].filter(Boolean).join(' \u00b7 ');
+      html += '<div class="hi-item"><div class="dot ' + dc + '"></div><div style="flex:1;min-width:0">' +
+        '<div style="font-size:14px;font-weight:700">' + s.meal + ' \u00b7 ' + s.time + '</div>' +
+        '<div style="font-size:13px;color:var(--muted);margin-top:2px">' + s.food + '</div>' +
+        '<div style="font-size:12px;color:var(--muted)">' + s.carbs + 'g carbs' + (fl ? ' \u00b7 ' + fl : '') + '</div>' +
+        '<div style="display:flex;justify-content:space-between;margin-top:5px">' +
+          '<span style="font-size:12px;color:var(--muted)">BG ' + s.pre + ' \u00b7 Rec ' + s.rec[0] + '\u2013' + s.rec[1] + 'u \u00b7 Taken <strong style="color:var(--teal)">' + s.taken + 'u</strong></span>' +
+          '<span class="tag ' + (s.out==='ok'?'teal':'amber') + '" style="font-size:11px">2hr: ' + p2 + '</span>' +
+        '</div></div></div>';
+    });
+  });
+  el.innerHTML = html || '<div style="padding:30px;text-align:center;color:var(--muted)">No sessions</div>';
+}
+
+function filterHistory(type, btn) {
+  document.querySelectorAll('.tpill').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderHistory(type);
+}
+
+// ── Glucose readings ─────────────────────────────────────────
+function renderGlucose() {
+  var el = document.getElementById('glucose-list');
+  if (!el) return;
+  var rs = [
+    {t:'10:14 PM',v:187,l:'3hr post-dinner'},  {t:'9:14 PM',v:176,l:'2hr post-dinner'},
+    {t:'8:14 PM',v:166,l:'1hr post-dinner'},   {t:'7:14 PM',v:153,l:'Pre-dinner'},
+    {t:'3:05 PM',v:155,l:'2hr post-lunch'},    {t:'2:05 PM',v:146,l:'1hr post-lunch'},
+    {t:'1:05 PM',v:140,l:'Pre-lunch'},          {t:'10:32 AM',v:202,l:'2hr post-breakfast'},
+    {t:'9:32 AM',v:194,l:'1hr post-breakfast'},{t:'8:32 AM',v:115,l:'Pre-breakfast'},
+    {t:'7:00 AM',v:128,l:'Fasting glucose'},
+  ];
+  el.innerHTML = rs.map(function(r) {
+    var col = r.v < 72 ? 'red' : r.v > 180 ? 'amber' : 'green';
+    var tc  = r.v < 72 ? 'var(--red)' : r.v > 180 ? 'var(--amber)' : 'var(--teal)';
+    return '<div class="hi-item"><div class="dot ' + col + '"></div>' +
+      '<div style="flex:1"><div style="font-size:14px;font-weight:700;color:' + tc + '">' + r.v + ' mg/dL</div>' +
+      '<div style="font-size:13px;color:var(--muted)">' + r.l + '</div></div>' +
+      '<div style="font-size:13px;color:var(--muted)">' + r.t + '</div></div>';
+  }).join('');
+}
+
+// ── Settings ─────────────────────────────────────────────────
+function saveSettings() {
+  APP.S.icr   = parseFloat(document.getElementById('s-icr').value)   || 10;
+  APP.S.isf   = parseFloat(document.getElementById('s-isf').value)   || 45;
+  APP.S.bkfst = parseInt(document.getElementById('s-bkfst').value)   || 15;
+  var now = new Date();
+  var ts  = now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) +
+            ' \u00b7 ' + now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  var e = document.getElementById('s-ts');
+  if (e) e.textContent = ts;
+  showToast('Settings saved \u00b7 ' + ts);
+}
+
+// ── Init ─────────────────────────────────────────────────────
+updateGreeting();
+renderHistory(null);
+renderGlucose();
+updateGTag();
+
+function fHist(type, btn) { filterHistory(type, btn); }
+
+</script>
+</body>
+</html>
