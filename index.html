@@ -30,7 +30,8 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 .top-bar{padding:calc(10px + var(--safe-top)) 16px 11px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;flex-shrink:0}
 .top-bar h2{font-size:18px;font-weight:700;color:var(--text)}
 .top-bar .sub{font-size:13px;color:var(--muted);margin-top:1px}
-.nav-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg);border-top:1px solid var(--border);display:flex;z-index:9999;padding-bottom:var(--safe-bottom);box-shadow:0 -1px 12px rgba(0,0,0,.08)}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);display:flex;z-index:9999;padding-bottom:var(--safe-bottom);box-shadow:0 -1px 12px rgba(0,0,0,.08)}
+.nav-bar-inner{display:flex;width:100%;max-width:430px;margin:0 auto}
 .nav-btn{flex:1;padding:9px 2px 7px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--muted);font-family:inherit;transition:color .15s;min-width:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .nav-btn i{font-size:22px}
 .nav-btn.active{color:var(--teal)}
@@ -608,17 +609,35 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div id="apikey-status" style="font-size:12px;color:var(--muted)">No API key saved — using built-in database only</div>
   </div>
 
-  <div style="padding:0 14px 16px"><button class="btn btn-p" onclick="saveSettings()">Save settings</button></div>
+  <div class="sec">Backup &amp; restore</div>
+  <div class="card" style="margin-bottom:4px">
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">
+      <strong style="color:var(--text)">Export</strong> saves all your meals, glucose and fasting readings as a JSON file on your device.<br>
+      <strong style="color:var(--text)">Import</strong> restores from a previously exported file — choose Merge or Replace.
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:0">
+      <button onclick="exportData()" style="flex:1;padding:12px;border-radius:11px;background:var(--teal);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
+        <i class="ti ti-download" style="margin-right:5px;vertical-align:-2px"></i>Export JSON
+      </button>
+      <button onclick="triggerImport()" style="flex:1;padding:12px;border-radius:11px;background:var(--bg2);color:var(--text);border:1px solid var(--border2);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
+        <i class="ti ti-upload" style="margin-right:5px;vertical-align:-2px"></i>Import JSON
+      </button>
+    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+  <div style="padding:4px 14px 16px"><button class="btn btn-p" onclick="saveSettings()">Save settings</button></div>
 </div>
 
 <!-- BOTTOM NAV -->
 <nav class="nav-bar">
+  <div class="nav-bar-inner">
   <button class="nav-btn active" id="nb-home" onclick="go('s-home')"><i class="ti ti-home"></i><span>Home</span></button>
   <button class="nav-btn" id="nb-calc" onclick="go('s-calc')"><i class="ti ti-calculator"></i><span>Dose</span></button>
   <button class="nav-btn" id="nb-history" onclick="go('s-history')"><i class="ti ti-list"></i><span>History</span></button>
   <button class="nav-btn" id="nb-glucose" onclick="go('s-glucose')"><i class="ti ti-chart-line"></i><span>Glucose</span></button>
   <button class="nav-btn" id="nb-analytics" onclick="go('s-analytics')"><i class="ti ti-chart-bar"></i><span>Trends</span></button>
   <button class="nav-btn" id="nb-settings" onclick="go('s-settings')"><i class="ti ti-settings"></i><span>Settings</span></button>
+  </div>
 </nav>
 <div class="toast" id="toast"></div>
 </div>
@@ -2282,6 +2301,188 @@ function loadSettings() {
 // ═══════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════════════
+function triggerImport() {
+  var el = document.getElementById('import-file');
+  if(el) el.click();
+}
+
+function exportData() {
+  var data = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    patientName: DB.getSettings().name || 'GlucoWise User',
+    doses:    DB.getDoses(),
+    postMeal: DB.getPostMeal(),
+    fasting:  DB.getFasting(),
+    settings: DB.getSettings()
+  };
+
+  var json    = JSON.stringify(data, null, 2);
+  var blob    = new Blob([json], {type: 'application/json'});
+  var url     = URL.createObjectURL(blob);
+  var a       = document.createElement('a');
+  var today   = new Date().toISOString().slice(0,10);
+  var name    = (data.patientName || 'glucowise').replace(/\s+/g,'-').toLowerCase();
+  a.href      = url;
+  a.download  = 'glucowise-' + name + '-' + today + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  var count = data.doses.length + data.postMeal.length + data.fasting.length;
+  showToast('Exported ' + count + ' records to ' + a.download);
+}
+
+function importData(event) {
+  var file = event.target.files[0];
+  if(!file){ return; }
+
+  // Reset input so same file can be re-imported if needed
+  event.target.value = '';
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var data;
+    try {
+      data = JSON.parse(e.target.result);
+    } catch(err) {
+      showToast('Invalid file — could not read JSON');
+      return;
+    }
+
+    // Validate it looks like a GlucoWise export
+    if(!data.doses && !data.postMeal && !data.fasting && !data.settings) {
+      showToast('This does not look like a GlucoWise backup file');
+      return;
+    }
+
+    // Show confirmation modal before overwriting
+    showImportConfirm(data);
+  };
+  reader.readAsText(file);
+}
+
+function showImportConfirm(data) {
+  var ex = document.getElementById('import-modal'); if(ex) ex.remove();
+  var doses    = (data.doses    || []).length;
+  var postMeal = (data.postMeal || []).length;
+  var fasting  = (data.fasting  || []).length;
+  var expDate  = data.exportedAt ? data.exportedAt.slice(0,10) : 'unknown date';
+  var patient  = data.patientName || 'Unknown';
+
+  var m = document.createElement('div');
+  m.id = 'import-modal';
+  m.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:500;display:flex;align-items:flex-end;justify-content:center';
+
+  // Build content using DOM (no innerHTML string quoting issues)
+  var sheet = document.createElement('div');
+  sheet.style.cssText = 'background:var(--bg);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:430px';
+
+  // Header row
+  var header = document.createElement('div');
+  header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:14px';
+  var title = document.createElement('span');
+  title.style.cssText = 'font-size:17px;font-weight:700;color:var(--text)';
+  title.textContent = 'Import backup';
+  var closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'font-size:26px;cursor:pointer;color:var(--muted);background:none;border:none;font-family:inherit;line-height:1';
+  closeBtn.textContent = '×';
+  closeBtn.onclick = function(){ m.remove(); };
+  header.appendChild(title);
+  header.appendChild(closeBtn);
+  sheet.appendChild(header);
+
+  // Summary card
+  var summary = document.createElement('div');
+  summary.style.cssText = 'background:var(--teal-light);border:1px solid var(--teal);border-radius:12px;padding:13px 15px;margin-bottom:14px;font-size:13px;color:var(--teal);line-height:1.8';
+  summary.innerHTML = '<strong>File summary</strong><br>' +
+    'Patient: <strong>' + patient + '</strong><br>' +
+    'Exported: <strong>' + expDate + '</strong><br>' +
+    'Meal sessions: <strong>' + doses + '</strong><br>' +
+    'Post-meal readings: <strong>' + postMeal + '</strong><br>' +
+    'Fasting readings: <strong>' + fasting + '</strong>';
+  sheet.appendChild(summary);
+
+  // Instructions
+  var info = document.createElement('div');
+  info.style.cssText = 'font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6';
+  info.innerHTML = '<strong style="color:var(--text)">How do you want to import?</strong><br>' +
+    'Merge keeps existing records and adds new ones.<br>' +
+    'Replace wipes current data and loads only this file.';
+  sheet.appendChild(info);
+
+  // Buttons
+  var btnWrap = document.createElement('div');
+  btnWrap.style.cssText = 'display:flex;flex-direction:column;gap:8px';
+
+  var mergeBtn = document.createElement('button');
+  mergeBtn.style.cssText = 'width:100%;padding:13px;border-radius:12px;background:var(--teal);color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit';
+  mergeBtn.textContent = 'Merge with existing data';
+  mergeBtn.onclick = function(){ doImport('merge'); };
+
+  var replaceBtn = document.createElement('button');
+  replaceBtn.style.cssText = 'width:100%;padding:13px;border-radius:12px;background:#fee2e2;color:var(--red);border:1px solid #fca5a5;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit';
+  replaceBtn.textContent = 'Replace all current data';
+  replaceBtn.onclick = function(){ doImport('replace'); };
+
+  btnWrap.appendChild(mergeBtn);
+  btnWrap.appendChild(replaceBtn);
+  sheet.appendChild(btnWrap);
+  m.appendChild(sheet);
+
+  m.addEventListener('click', function(e){ if(e.target===m) m.remove(); });
+  document.body.appendChild(m);
+  window._pendingImport = data;
+}
+
+function doImport(mode) {
+  var data = window._pendingImport;
+  if(!data){ showToast('No import data found'); return; }
+
+  var m = document.getElementById('import-modal'); if(m) m.remove();
+
+  if(mode === 'replace') {
+    // Wipe existing and load imported
+    DB.deleteAll();
+    if(data.doses)    localStorage.setItem('gw_doses',    JSON.stringify(data.doses));
+    if(data.postMeal) localStorage.setItem('gw_postMeal', JSON.stringify(data.postMeal));
+    if(data.fasting)  localStorage.setItem('gw_fasting',  JSON.stringify(data.fasting));
+    if(data.settings) localStorage.setItem('gw_settings', JSON.stringify(data.settings));
+    // Reload settings into APP.S
+    S = DB.getSettings();
+    loadSettings();
+    showToast('Data replaced — ' + (data.doses||[]).length + ' meal sessions loaded');
+  } else {
+    // Merge: add imported records, skip duplicates by id
+    function mergeList(key, incoming) {
+      var existing = JSON.parse(localStorage.getItem('gw_'+key) || '[]');
+      var existingIds = existing.map(function(r){ return r.id; });
+      var added = 0;
+      (incoming||[]).forEach(function(r){
+        if(existingIds.indexOf(r.id) === -1){ existing.push(r); added++; }
+      });
+      localStorage.setItem('gw_'+key, JSON.stringify(existing));
+      return added;
+    }
+    var addedDoses    = mergeList('doses',    data.doses);
+    var addedPostMeal = mergeList('postMeal', data.postMeal);
+    var addedFasting  = mergeList('fasting',  data.fasting);
+    var total = addedDoses + addedPostMeal + addedFasting;
+    showToast('Merged: ' + total + ' new records added');
+  }
+
+  window._pendingImport = null;
+  updateHome();
+  renderHistory(null);
+  renderGlucose();
+  renderAnalytics();
+  updateGreeting();
+}
+
 updateGreeting();
 updateGTag();
 updateHome();
