@@ -306,6 +306,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div class="sec">Nutritional breakdown</div>
   <div style="padding:0 14px 10px">
+    <!-- Calories row -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:28px;font-weight:800;color:var(--text)" id="m-cals">0</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">TOTAL CALORIES (kcal)</div>
+      </div>
+      <div style="text-align:right;font-size:12px;color:var(--muted);line-height:1.7" id="m-cal-breakdown">
+        Carbs: 0 kcal<br>Protein: 0 kcal<br>Fat: 0 kcal
+      </div>
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:6px">
       <div style="text-align:center"><div style="background:var(--teal-light);border:1.5px solid var(--teal);border-radius:10px;padding:10px 6px"><div style="font-size:22px;font-weight:800;color:var(--teal)" id="m-carbs">0</div><div style="font-size:10px;color:var(--teal);font-weight:700;margin-top:2px">CARBS g</div></div></div>
       <div style="text-align:center"><div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 6px"><div style="font-size:22px;font-weight:800;color:var(--amber)" id="m-protein">0</div><div style="font-size:10px;color:var(--muted);font-weight:700;margin-top:2px">PROTEIN g</div></div></div>
@@ -313,10 +323,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div style="text-align:center"><div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 6px"><div style="font-size:22px;font-weight:800;color:var(--red)" id="m-fat">0</div><div style="font-size:10px;color:var(--muted);font-weight:700;margin-top:2px">FAT g</div></div></div>
     </div>
     <div id="macro-inputs" style="display:none;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
-      <div><div class="fl" style="font-size:10px">Carbs</div><input type="number" id="i-carbs" value="0" min="0" style="text-align:center;padding:8px 4px;font-size:14px"></div>
-      <div><div class="fl" style="font-size:10px">Protein</div><input type="number" id="i-protein" value="0" min="0" style="text-align:center;padding:8px 4px;font-size:14px"></div>
-      <div><div class="fl" style="font-size:10px">Fiber</div><input type="number" id="i-fiber" value="0" min="0" style="text-align:center;padding:8px 4px;font-size:14px"></div>
-      <div><div class="fl" style="font-size:10px">Fat</div><input type="number" id="i-fat" value="0" min="0" style="text-align:center;padding:8px 4px;font-size:14px"></div>
+      <div><div class="fl" style="font-size:10px">Carbs g</div><input type="number" id="i-carbs" value="0" min="0" oninput="recalcCalsFromInputs()" style="text-align:center;padding:8px 4px;font-size:14px"></div>
+      <div><div class="fl" style="font-size:10px">Protein g</div><input type="number" id="i-protein" value="0" min="0" oninput="recalcCalsFromInputs()" style="text-align:center;padding:8px 4px;font-size:14px"></div>
+      <div><div class="fl" style="font-size:10px">Fiber g</div><input type="number" id="i-fiber" value="0" min="0" oninput="recalcCalsFromInputs()" style="text-align:center;padding:8px 4px;font-size:14px"></div>
+      <div><div class="fl" style="font-size:10px">Fat g</div><input type="number" id="i-fat" value="0" min="0" oninput="recalcCalsFromInputs()" style="text-align:center;padding:8px 4px;font-size:14px"></div>
     </div>
     <div id="macro-edit-link" style="display:none;margin-top:6px;text-align:right">
       <span onclick="toggleMacroEdit()" style="font-size:13px;color:var(--teal);cursor:pointer;text-decoration:underline">Edit values manually</span>
@@ -582,9 +592,22 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div class="sec">Doctor</div>
   <div class="card" style="margin-bottom:8px">
-    <div class="srow"><div class="sl">Doctor name</div><input type="text" id="s-doctor" placeholder="Dr. Name" style="width:160px;text-align:right"></div>
+    <div class="srow"><div class="sl">Doctor name</div><input type="text" id="s-doctor" placeholder="Dr. Name" style="width:160px;text-align:right;padding:7px 10px;font-size:14px"></div>
     <div class="srow"><div class="sl">Last updated</div><span class="sv" id="s-ts" style="font-size:13px;color:var(--muted)">Not saved yet</span></div>
   </div>
+
+  <div class="sec">AI food lookup (optional)</div>
+  <div class="card" style="margin-bottom:8px">
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px">
+      Enter your Anthropic API key to enable <strong>AI-powered nutrition lookup for any food</strong> — curries, street food, restaurant dishes, regional foods — anything not in the built-in list. Get a free key at <strong>console.anthropic.com</strong>. Stored only on this device.
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input type="password" id="s-apikey" placeholder="sk-ant-api03-..." style="flex:1;font-size:13px;padding:9px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:monospace">
+      <button onclick="testApiKey()" style="padding:9px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;font-size:13px;font-family:inherit;color:var(--text);white-space:nowrap;font-weight:600">Test key</button>
+    </div>
+    <div id="apikey-status" style="font-size:12px;color:var(--muted)">No API key saved — using built-in database only</div>
+  </div>
+
   <div style="padding:0 14px 16px"><button class="btn btn-p" onclick="saveSettings()">Save settings</button></div>
 </div>
 
@@ -883,7 +906,8 @@ function confirmDelete(type) {
 // FOOD DATABASE
 // ═══════════════════════════════════════════════════════
 var FDB = {
-  'chapati':{c:20,p:3,fi:2,f:1},'roti':{c:20,p:3,fi:2,f:1},'naan':{c:35,p:5,fi:1,f:4},
+  'chapati':{c:20,p:3,fi:2,f:1},'roti':{c:20,p:3,fi:2,f:1},
+  'phulka':{c:15,p:2,fi:2,f:0},'naan':{c:35,p:5,fi:1,f:4},
   'paratha':{c:30,p:4,fi:2,f:6},'puri':{c:20,p:3,fi:1,f:5},'bhatura':{c:40,p:6,fi:1,f:8},
   'bread':{c:25,p:4,fi:2,f:1},'idli':{c:15,p:2,fi:1,f:0},'dosa':{c:30,p:3,fi:1,f:2},
   'uttapam':{c:35,p:4,fi:2,f:3},'upma':{c:30,p:4,fi:2,f:3},'poha':{c:36,p:3,fi:2,f:2},
@@ -895,16 +919,426 @@ var FDB = {
   'aloo':{c:25,p:2,fi:2,f:0},'potato':{c:25,p:2,fi:2,f:0},'palak':{c:5,p:3,fi:2,f:0},
   'gobi':{c:8,p:2,fi:2,f:0},'bhindi':{c:7,p:2,fi:3,f:0},'matar':{c:14,p:5,fi:4,f:0},
   'carrot':{c:10,p:1,fi:3,f:0},'salad':{c:5,p:1,fi:2,f:0},'tomato':{c:5,p:1,fi:1,f:0},
+  'cucumber':{c:4,p:1,fi:1,f:0},
   'paneer':{c:4,p:14,fi:0,f:12},'tofu':{c:3,p:8,fi:1,f:4},'curd':{c:8,p:6,fi:0,f:3},
   'yogurt':{c:8,p:6,fi:0,f:3},'raita':{c:8,p:5,fi:0,f:2},'milk':{c:12,p:8,fi:0,f:4},
-  'lassi':{c:24,p:8,fi:0,f:3},'chai':{c:8,p:2,fi:0,f:2},'cheese':{c:2,p:7,fi:0,f:8},
+  'lassi':{c:24,p:8,fi:0,f:3},'chai':{c:8,p:2,fi:0,f:2},
+  'tea with milk':{c:4,p:1,fi:0,f:1},
+  'tea with milk no sugar':{c:4,p:1,fi:0,f:1},
+  'black tea':{c:1,p:0,fi:0,f:0},
+  'green tea':{c:0,p:0,fi:0,f:0},'cheese':{c:2,p:7,fi:0,f:8},
   'butter':{c:0,p:0,fi:0,f:12},'ghee':{c:0,p:0,fi:0,f:14},
+  'almond':{c:6,p:6,fi:3,f:14},
+  'almonds':{c:6,p:6,fi:3,f:14},
+  'walnut':{c:4,p:4,fi:2,f:19},
+  'walnuts':{c:4,p:4,fi:2,f:19},
+  'cashew':{c:9,p:5,fi:1,f:13},
+  'peanut':{c:6,p:7,fi:2,f:14},
+  'pista':{c:8,p:6,fi:3,f:13},
+  'pistachio':{c:8,p:6,fi:3,f:13},
+  /* ── WESTERN FOODS ────────────────────────────── */
+  /* Breakfast */
+  'pancake':{c:28,p:5,fi:1,f:6},
+  'waffle':{c:30,p:6,fi:1,f:8},
+  'french toast':{c:26,p:8,fi:1,f:9},
+  'bagel':{c:48,p:9,fi:2,f:1},
+  'croissant':{c:26,p:5,fi:1,f:12},
+  'muffin':{c:35,p:4,fi:1,f:10},
+  'english muffin':{c:26,p:5,fi:2,f:2},
+  'cereal':{c:38,p:4,fi:2,f:1},
+  'granola bar':{c:28,p:4,fi:2,f:8},
+  'protein bar':{c:22,p:20,fi:4,f:8},
+  'toast':{c:24,p:4,fi:2,f:1},
+  'avocado toast':{c:26,p:5,fi:5,f:14},
+  'hash browns':{c:25,p:3,fi:2,f:10},
+  'bacon':{c:0,p:12,fi:0,f:12},
+  'sausage':{c:2,p:12,fi:0,f:16},
+  'baked beans':{c:20,p:6,fi:5,f:1},
+  /* Breads */
+  'white bread':{c:28,p:4,fi:1,f:2},
+  'brown bread':{c:24,p:5,fi:3,f:2},
+  'whole wheat bread':{c:22,p:5,fi:4,f:2},
+  'multigrain bread':{c:22,p:5,fi:4,f:3},
+  'sourdough':{c:26,p:5,fi:1,f:1},
+  'pita bread':{c:28,p:5,fi:1,f:1},
+  'dinner roll':{c:22,p:4,fi:1,f:3},
+  'garlic bread':{c:24,p:4,fi:1,f:7},
+  'baguette':{c:30,p:5,fi:1,f:1},
+  /* Mains & Fast Food */
+  'pizza slice':{c:28,p:10,fi:1,f:8},
+  'margherita pizza':{c:30,p:10,fi:1,f:8},
+  'chicken pizza':{c:28,p:14,fi:1,f:9},
+  'cheeseburger':{c:36,p:20,fi:1,f:18},
+  'veggie burger':{c:32,p:10,fi:4,f:8},
+  'hot dog':{c:22,p:10,fi:0,f:14},
+  'french fries':{c:35,p:4,fi:3,f:15},
+  'onion rings':{c:32,p:4,fi:2,f:16},
+  'fried chicken':{c:10,p:22,fi:0,f:14},
+  'chicken wings':{c:5,p:20,fi:0,f:14},
+  'chicken nuggets':{c:14,p:14,fi:0,f:12},
+  'fish and chips':{c:45,p:18,fi:3,f:18},
+  'mac and cheese':{c:35,p:12,fi:1,f:12},
+  'grilled chicken':{c:0,p:30,fi:0,f:6},
+  'steak':{c:0,p:28,fi:0,f:14},
+  'pork chop':{c:0,p:26,fi:0,f:12},
+  'lamb chops':{c:0,p:24,fi:0,f:16},
+  'meatballs':{c:8,p:16,fi:0,f:12},
+  /* Pasta & Rice */
+  'spaghetti':{c:40,p:7,fi:2,f:1},
+  'penne':{c:42,p:7,fi:2,f:1},
+  'lasagne':{c:28,p:14,fi:2,f:12},
+  'ravioli':{c:32,p:10,fi:1,f:8},
+  'risotto':{c:40,p:8,fi:1,f:8},
+  'fried rice':{c:45,p:6,fi:1,f:6},
+  'pasta salad':{c:30,p:6,fi:2,f:6},
+  /* Soups */
+  'tomato soup':{c:16,p:2,fi:2,f:3},
+  'chicken soup':{c:8,p:10,fi:1,f:4},
+  'vegetable soup':{c:12,p:3,fi:3,f:2},
+  'cream of mushroom':{c:14,p:3,fi:1,f:6},
+  'minestrone':{c:18,p:5,fi:4,f:2},
+  'lentil soup':{c:20,p:8,fi:5,f:2},
+  'clam chowder':{c:18,p:8,fi:1,f:8},
+  /* Salads */
+  'caesar salad':{c:8,p:8,fi:2,f:14},
+  'greek salad':{c:8,p:5,fi:2,f:10},
+  'garden salad':{c:6,p:2,fi:2,f:4},
+  'coleslaw':{c:12,p:1,fi:2,f:8},
+  'potato salad':{c:22,p:3,fi:2,f:10},
+  'egg salad':{c:4,p:10,fi:0,f:10},
+  'tuna salad':{c:4,p:18,fi:0,f:6},
+  'chicken salad':{c:5,p:20,fi:1,f:8},
+  /* Sandwiches & Wraps */
+  'club sandwich':{c:36,p:22,fi:2,f:14},
+  'blt sandwich':{c:28,p:14,fi:2,f:12},
+  'grilled cheese':{c:26,p:10,fi:1,f:16},
+  'tuna sandwich':{c:28,p:16,fi:2,f:8},
+  'chicken sandwich':{c:30,p:20,fi:2,f:10},
+  'egg sandwich':{c:26,p:12,fi:1,f:10},
+  'wrap':{c:30,p:12,fi:2,f:8},
+  'chicken wrap':{c:32,p:22,fi:2,f:10},
+  'burrito':{c:48,p:16,fi:4,f:12},
+  'taco':{c:22,p:10,fi:2,f:8},
+  'quesadilla':{c:30,p:14,fi:1,f:14},
+  /* Snacks */
+  'potato chips':{c:15,p:2,fi:1,f:10},
+  'popcorn':{c:12,p:2,fi:2,f:4},
+  'nachos':{c:28,p:5,fi:2,f:16},
+  'pretzels':{c:22,p:3,fi:1,f:1},
+  'crackers':{c:18,p:2,fi:1,f:4},
+  'rice cakes':{c:14,p:1,fi:0,f:0},
+  'trail mix':{c:20,p:5,fi:2,f:12},
+  'hummus':{c:8,p:4,fi:2,f:6},
+  'guacamole':{c:4,p:1,fi:3,f:8},
+  /* Desserts */
+  'chocolate cake':{c:50,p:5,fi:1,f:16},
+  'cheesecake':{c:36,p:6,fi:0,f:22},
+  'brownie':{c:36,p:4,fi:1,f:14},
+  'cookie':{c:20,p:2,fi:0,f:8},
+  'ice cream':{c:28,p:4,fi:0,f:10},
+  'gelato':{c:24,p:4,fi:0,f:8},
+  'doughnut':{c:32,p:4,fi:1,f:14},
+  'cupcake':{c:38,p:3,fi:0,f:14},
+  'apple pie':{c:40,p:3,fi:2,f:14},
+  'chocolate mousse':{c:20,p:5,fi:1,f:12},
+  'pudding':{c:28,p:4,fi:0,f:6},
+  'tiramisu':{c:26,p:6,fi:0,f:14},
+  'panna cotta':{c:18,p:4,fi:0,f:10},
+  /* Dairy */
+  'cream cheese':{c:2,p:4,fi:0,f:10},
+  'sour cream':{c:2,p:1,fi:0,f:10},
+  'whipping cream':{c:2,p:1,fi:0,f:12},
+  'cottage cheese':{c:4,p:14,fi:0,f:4},
+  'cheddar cheese':{c:1,p:8,fi:0,f:10},
+  'mozzarella':{c:1,p:8,fi:0,f:8},
+  'feta cheese':{c:1,p:5,fi:0,f:8},
+  'greek yogurt':{c:6,p:12,fi:0,f:2},
+  'skimmed milk':{c:12,p:8,fi:0,f:0},
+  'full fat milk':{c:12,p:8,fi:0,f:8},
+  /* Grains & Staples */
+  'quinoa':{c:20,p:4,fi:3,f:2},
+  'brown rice':{c:38,p:3,fi:2,f:1},
+  'white rice':{c:45,p:3,fi:0,f:0},
+  'couscous':{c:34,p:5,fi:2,f:0},
+  'barley':{c:28,p:4,fi:6,f:1},
+  'corn':{c:20,p:3,fi:2,f:1},
+  'sweet corn':{c:18,p:3,fi:2,f:1},
+  'sweet potato':{c:20,p:2,fi:3,f:0},
+  'baked potato':{c:30,p:4,fi:3,f:0},
+  'mashed potato':{c:22,p:3,fi:2,f:4},
+  /* Proteins */
+  'tuna':{c:0,p:26,fi:0,f:1},
+  'salmon':{c:0,p:22,fi:0,f:12},
+  'shrimp':{c:0,p:18,fi:0,f:1},
+  'crab':{c:1,p:16,fi:0,f:1},
+  'lobster':{c:1,p:18,fi:0,f:1},
+  'pork':{c:0,p:22,fi:0,f:10},
+  'ham':{c:2,p:18,fi:0,f:6},
+  'turkey':{c:0,p:28,fi:0,f:4},
+  'turkey sandwich':{c:28,p:22,fi:2,f:8},
+  'beef':{c:0,p:26,fi:0,f:12},
+  'lamb':{c:0,p:24,fi:0,f:16},
+  'tofu scramble':{c:5,p:10,fi:1,f:6},
+  /* Drinks */
+  'orange juice':{c:26,p:2,fi:0,f:0},
+  'apple juice':{c:28,p:0,fi:0,f:0},
+  'cranberry juice':{c:30,p:0,fi:0,f:0},
+  'smoothie':{c:30,p:4,fi:3,f:2},
+  'protein shake':{c:10,p:25,fi:2,f:4},
+  'milkshake':{c:55,p:10,fi:0,f:10},
+  'hot chocolate':{c:28,p:5,fi:2,f:6},
+  'cappuccino':{c:8,p:4,fi:0,f:4},
+  'latte':{c:12,p:6,fi:0,f:4},
+  'americano':{c:0,p:0,fi:0,f:0},
+  'espresso':{c:1,p:0,fi:0,f:0},
+  'energy drink':{c:28,p:1,fi:0,f:0},
+  'sports drink':{c:18,p:0,fi:0,f:0},
+  'diet coke':{c:0,p:0,fi:0,f:0},
+  'cola':{c:26,p:0,fi:0,f:0},
+  'beer':{c:14,p:1,fi:0,f:0},
+  'wine':{c:4,p:0,fi:0,f:0},
+  /* Vegetables */
+  'broccoli':{c:6,p:3,fi:3,f:0},
+  'spinach':{c:4,p:3,fi:2,f:0},
+  'kale':{c:6,p:3,fi:2,f:0},
+  'lettuce':{c:2,p:1,fi:1,f:0},
+  'celery':{c:2,p:0,fi:1,f:0},
+  'bell pepper':{c:6,p:1,fi:2,f:0},
+  'mushroom':{c:3,p:3,fi:1,f:0},
+  'zucchini':{c:4,p:1,fi:1,f:0},
+  'asparagus':{c:4,p:2,fi:2,f:0},
+  'peas':{c:14,p:5,fi:4,f:0},
+  'corn cob':{c:20,p:3,fi:2,f:1},
+  'beet':{c:10,p:2,fi:3,f:0},
+  'cauliflower':{c:6,p:2,fi:3,f:0},
+  'cabbage':{c:5,p:1,fi:2,f:0},
+  'avocado':{c:4,p:2,fi:7,f:15},
+  'olives':{c:2,p:0,fi:1,f:6},
+  'sesame seeds':{c:4,p:2,fi:1,f:5},
+  'sunflower seeds':{c:5,p:3,fi:1,f:7},
+  'pumpkin seeds':{c:3,p:5,fi:1,f:6},
+  'flaxseeds':{c:3,p:3,fi:4,f:6},
+  'chia seeds':{c:4,p:3,fi:5,f:5},
+  'raisins':{c:22,p:1,fi:1,f:0},
+  'dates':{c:18,p:1,fi:2,f:0},
+  'dried apricot':{c:13,p:1,fi:1,f:0},
+  /* Breads */
+  'pav':{c:28,p:4,fi:1,f:2},
+  'bhakri':{c:25,p:4,fi:3,f:2},
+  'bajra roti':{c:22,p:3,fi:3,f:1},
+  'jowar roti':{c:20,p:3,fi:2,f:1},
+  'makki roti':{c:24,p:3,fi:2,f:2},
+  'missi roti':{c:22,p:5,fi:3,f:2},
+  'tandoori roti':{c:22,p:4,fi:2,f:1},
+  'rumali roti':{c:25,p:4,fi:1,f:2},
+  'kulcha':{c:32,p:5,fi:1,f:4},
+  'besan chilla':{c:15,p:6,fi:2,f:4},
+  'moong dal chilla':{c:14,p:6,fi:2,f:3},
+  'thepla':{c:22,p:4,fi:3,f:4},
+  'aloo paratha':{c:35,p:5,fi:3,f:8},
+  'gobi paratha':{c:32,p:5,fi:3,f:7},
+  'paneer paratha':{c:30,p:8,fi:2,f:9},
+  'methi paratha':{c:28,p:5,fi:3,f:6},
+  'mooli paratha':{c:28,p:4,fi:3,f:6},
+  /* South Indian */
+  'rava dosa':{c:28,p:4,fi:1,f:4},
+  'masala dosa':{c:40,p:5,fi:2,f:6},
+  'paper dosa':{c:25,p:3,fi:1,f:3},
+  'set dosa':{c:30,p:4,fi:1,f:3},
+  'rava idli':{c:20,p:4,fi:1,f:3},
+  'medu vada':{c:18,p:5,fi:2,f:8},
+  'paniyaram':{c:20,p:4,fi:1,f:4},
+  'adai':{c:22,p:6,fi:3,f:3},
+  'pesarattu':{c:18,p:6,fi:3,f:2},
+  'pongal':{c:38,p:6,fi:2,f:5},
+  'bisibelebath':{c:42,p:8,fi:3,f:6},
+  'idiyappam':{c:30,p:2,fi:1,f:0},
+  'puttu':{c:32,p:3,fi:2,f:1},
+  /* Rice dishes */
+  'jeera rice':{c:42,p:3,fi:1,f:4},
+  'fried rice':{c:48,p:6,fi:1,f:6},
+  'lemon rice':{c:40,p:3,fi:1,f:5},
+  'curd rice':{c:35,p:5,fi:0,f:3},
+  'tamarind rice':{c:40,p:3,fi:1,f:5},
+  'coconut rice':{c:42,p:3,fi:1,f:6},
+  'tomato rice':{c:40,p:3,fi:1,f:4},
+  'veg biryani':{c:50,p:7,fi:2,f:6},
+  'egg biryani':{c:52,p:12,fi:2,f:8},
+  'paneer biryani':{c:50,p:12,fi:2,f:10},
+  'chicken biryani':{c:50,p:18,fi:2,f:9},
+  'mutton biryani':{c:52,p:20,fi:2,f:12},
+  /* Dals */
+  'chana dal':{c:22,p:9,fi:5,f:2},
+  'toor dal':{c:20,p:8,fi:4,f:1},
+  'urad dal':{c:18,p:8,fi:4,f:1},
+  'masoor dal':{c:18,p:9,fi:4,f:1},
+  'moong dal':{c:16,p:7,fi:4,f:1},
+  'dal fry':{c:18,p:8,fi:3,f:5},
+  'dal makhani':{c:20,p:9,fi:4,f:8},
+  'dal tadka':{c:18,p:8,fi:3,f:5},
+  'panchmel dal':{c:20,p:9,fi:4,f:4},
+  'kali dal':{c:20,p:9,fi:4,f:8},
+  'lobiya':{c:20,p:7,fi:5,f:1},
+  'moth beans':{c:18,p:8,fi:4,f:1},
+  'matki':{c:18,p:8,fi:4,f:1},
+  'roasted chana':{c:18,p:7,fi:4,f:3},
+  /* Vegetable curries */
+  'aloo gobi':{c:18,p:3,fi:3,f:5},
+  'aloo matar':{c:20,p:4,fi:3,f:5},
+  'aloo palak':{c:16,p:3,fi:3,f:5},
+  'aloo jeera':{c:22,p:3,fi:2,f:5},
+  'aloo sabzi':{c:22,p:3,fi:2,f:4},
+  'palak paneer':{c:8,p:12,fi:2,f:14},
+  'paneer sabzi':{c:8,p:12,fi:2,f:10},
+  'paneer subzi':{c:8,p:12,fi:2,f:10},
+  'paneer bhurji':{c:5,p:14,fi:0,f:14},
+  'egg paneer':{c:3,p:16,fi:0,f:14},
+  'matar paneer':{c:14,p:10,fi:3,f:12},
+  'paneer butter masala':{c:12,p:12,fi:1,f:16},
+  'shahi paneer':{c:14,p:11,fi:1,f:18},
+  'kadai paneer':{c:10,p:12,fi:2,f:14},
+  'paneer tikka masala':{c:10,p:14,fi:1,f:14},
+  'bhindi masala':{c:10,p:3,fi:4,f:6},
+  'baingan bharta':{c:10,p:2,fi:4,f:6},
+  'baingan masala':{c:10,p:2,fi:4,f:5},
+  'lauki':{c:5,p:1,fi:2,f:0},
+  'tinda':{c:5,p:1,fi:2,f:0},
+  'turai':{c:4,p:1,fi:2,f:0},
+  'karela':{c:6,p:2,fi:3,f:0},
+  'parval':{c:6,p:2,fi:2,f:0},
+  'arbi':{c:18,p:2,fi:2,f:0},
+  'suran':{c:20,p:2,fi:3,f:0},
+  'drumstick':{c:6,p:2,fi:3,f:0},
+  'jackfruit':{c:20,p:2,fi:2,f:0},
+  'mix veg':{c:14,p:4,fi:3,f:6},
+  'navratan korma':{c:16,p:6,fi:2,f:12},
+  'kadhi':{c:12,p:4,fi:1,f:6},
+  'kadhi pakora':{c:18,p:5,fi:1,f:8},
+  'malai kofta':{c:18,p:8,fi:1,f:16},
+  'dum aloo':{c:24,p:4,fi:2,f:10},
+  'pav bhaji':{c:30,p:5,fi:3,f:8},
+  'chole bhature':{c:55,p:10,fi:5,f:14},
+  /* Non-veg */
+  'butter chicken':{c:8,p:22,fi:1,f:14},
+  'chicken tikka':{c:5,p:28,fi:0,f:8},
+  'chicken tikka masala':{c:10,p:22,fi:1,f:14},
+  'tandoori chicken':{c:4,p:30,fi:0,f:7},
+  'chicken kebab':{c:5,p:22,fi:0,f:8},
+  'chicken 65':{c:8,p:20,fi:0,f:12},
+  'chicken korma':{c:10,p:20,fi:1,f:16},
+  'chicken curry':{c:8,p:22,fi:1,f:10},
+  'mutton curry':{c:6,p:20,fi:1,f:14},
+  'mutton biryani':{c:52,p:20,fi:2,f:12},
+  'mutton rogan josh':{c:8,p:22,fi:1,f:16},
+  'fish curry':{c:5,p:20,fi:1,f:8},
+  'fish fry':{c:8,p:18,fi:0,f:10},
+  'prawn masala':{c:6,p:16,fi:1,f:8},
+  'egg curry':{c:5,p:11,fi:1,f:10},
+  'egg bhurji':{c:4,p:12,fi:0,f:12},
+  'boiled egg':{c:1,p:6,fi:0,f:5},
+  'omelette':{c:2,p:12,fi:0,f:10},
+  'scrambled egg':{c:1,p:6,fi:0,f:7},
+  'keema':{c:5,p:20,fi:1,f:14},
+  'keema matar':{c:12,p:18,fi:2,f:14},
+  /* Street food & snacks */
+  'bhel puri':{c:30,p:4,fi:2,f:4},
+  'sev puri':{c:28,p:4,fi:2,f:6},
+  'ragda pattice':{c:35,p:6,fi:3,f:6},
+  'aloo tikki':{c:28,p:4,fi:2,f:8},
+  'bread pakora':{c:30,p:6,fi:1,f:12},
+  'onion pakora':{c:18,p:3,fi:1,f:8},
+  'kachori':{c:32,p:5,fi:2,f:12},
+  'mathri':{c:18,p:3,fi:1,f:8},
+  'namkeen':{c:20,p:4,fi:1,f:10},
+  'mixture':{c:18,p:4,fi:1,f:10},
+  'chakli':{c:22,p:4,fi:1,f:10},
+  'murukku':{c:22,p:4,fi:1,f:10},
+  'dhokla':{c:18,p:5,fi:1,f:3},
+  'khandvi':{c:16,p:5,fi:1,f:4},
+  'thepla':{c:22,p:4,fi:3,f:4},
+  'batata vada':{c:28,p:4,fi:2,f:10},
+  'misal pav':{c:40,p:8,fi:4,f:8},
+  'dabeli':{c:38,p:6,fi:2,f:8},
+  'sabudana khichdi':{c:40,p:3,fi:1,f:8},
+  'poha chivda':{c:22,p:3,fi:1,f:6},
+  'murmura':{c:18,p:2,fi:0,f:0},
+  'roasted chana':{c:18,p:7,fi:4,f:3},
+  'corn bhel':{c:25,p:3,fi:2,f:2},
+  'sprouts salad':{c:12,p:6,fi:4,f:1},
+  'papad':{c:10,p:3,fi:1,f:1},
+  /* Sweets */
+  'gulab jamun':{c:30,p:3,fi:0,f:8},
+  'rasgulla':{c:25,p:3,fi:0,f:1},
+  'rasmalai':{c:22,p:5,fi:0,f:6},
+  'barfi':{c:28,p:4,fi:0,f:8},
+  'kaju katli':{c:25,p:5,fi:1,f:12},
+  'peda':{c:24,p:4,fi:0,f:6},
+  'modak':{c:30,p:3,fi:1,f:6},
+  'shrikhand':{c:22,p:6,fi:0,f:4},
+  'basundi':{c:20,p:6,fi:0,f:8},
+  'rabri':{c:22,p:6,fi:0,f:8},
+  'payasam':{c:28,p:4,fi:0,f:6},
+  'gajar ka halwa':{c:28,p:4,fi:2,f:10},
+  'moong dal halwa':{c:30,p:6,fi:2,f:14},
+  'sooji halwa':{c:32,p:3,fi:1,f:10},
+  'besan barfi':{c:24,p:5,fi:1,f:10},
+  'coconut barfi':{c:22,p:3,fi:2,f:8},
+  'mysore pak':{c:28,p:4,fi:1,f:14},
+  'puran poli':{c:42,p:6,fi:2,f:6},
+  'rava ladoo':{c:28,p:4,fi:1,f:8},
+  'besan ladoo':{c:26,p:5,fi:2,f:10},
+  'coconut ladoo':{c:22,p:3,fi:2,f:8},
+  /* Drinks */
+  'masala chai':{c:8,p:2,fi:0,f:2},
+  'black coffee':{c:0,p:0,fi:0,f:0},
+  'coffee with milk':{c:5,p:2,fi:0,f:2},
+  'filter coffee':{c:8,p:2,fi:0,f:2},
+  'cold coffee':{c:18,p:4,fi:0,f:4},
+  'mango lassi':{c:28,p:6,fi:1,f:3},
+  'rose lassi':{c:24,p:6,fi:0,f:3},
+  'banana shake':{c:32,p:6,fi:2,f:4},
+  'turmeric milk':{c:12,p:4,fi:0,f:4},
+  'badam milk':{c:16,p:5,fi:1,f:6},
+  'buttermilk':{c:5,p:3,fi:0,f:1},
+  'coconut water':{c:9,p:1,fi:1,f:0},
+  'sugarcane juice':{c:27,p:0,fi:0,f:0},
+  'nimbu pani':{c:10,p:0,fi:0,f:0},
+  'aam panna':{c:18,p:0,fi:1,f:0},
+  /* Fruits */
+  'watermelon':{c:8,p:1,fi:0,f:0},
+  'pomegranate':{c:19,p:2,fi:4,f:1},
+  'litchi':{c:16,p:1,fi:1,f:0},
+  'chikoo':{c:20,p:1,fi:3,f:1},
+  'pineapple':{c:13,p:1,fi:1,f:0},
+  'kiwi':{c:15,p:1,fi:3,f:1},
+  'strawberry':{c:8,p:1,fi:2,f:0},
+  'pear':{c:15,p:0,fi:3,f:0},
+  'plum':{c:11,p:1,fi:1,f:0},
+  'fig':{c:10,p:1,fi:1,f:0},
+  'amla':{c:10,p:1,fi:3,f:0},
+  'jamun':{c:14,p:1,fi:1,f:0},
+  'dates':{c:18,p:1,fi:2,f:0},
+  /* Condiments */
+  'coconut chutney':{c:5,p:1,fi:1,f:4},
+  'mint chutney':{c:3,p:1,fi:1,f:0},
+  'tamarind chutney':{c:12,p:0,fi:1,f:0},
+  'boondi raita':{c:10,p:4,fi:0,f:3},
+  'cucumber raita':{c:7,p:4,fi:0,f:2},
+  'onion raita':{c:8,p:4,fi:0,f:2},
+  /* Breakfast */
+  'sheera':{c:35,p:4,fi:1,f:10},
+  'daliya':{c:28,p:5,fi:4,f:2},
+  'masala oats':{c:26,p:6,fi:4,f:4},
+  'granola':{c:32,p:5,fi:3,f:8},
+  'bread butter':{c:25,p:4,fi:1,f:8},
+  'bread jam':{c:30,p:4,fi:1,f:2},
+  'bread omelette':{c:26,p:12,fi:1,f:12},
   'chicken':{c:0,p:25,fi:0,f:3},'mutton':{c:0,p:22,fi:0,f:8},'fish':{c:0,p:22,fi:0,f:2},
   'egg':{c:1,p:6,fi:0,f:5},'prawn':{c:1,p:18,fi:0,f:1},
   'samosa':{c:28,p:4,fi:2,f:10},'vada':{c:22,p:4,fi:2,f:8},'pakora':{c:20,p:3,fi:1,f:9},
   'chaat':{c:30,p:5,fi:3,f:5},'jalebi':{c:50,p:1,fi:0,f:8},'halwa':{c:45,p:3,fi:1,f:12},
   'kheer':{c:35,p:6,fi:0,f:6},'ladoo':{c:38,p:4,fi:2,f:10},
-  'banana':{c:27,p:1,fi:3,f:0},'mango':{c:30,p:1,fi:2,f:0},'apple':{c:25,p:0,fi:4,f:0},
+  'banana':{c:27,p:1,fi:3,f:0},'mango':{c:30,p:1,fi:2,f:0},'raw mango':{c:10,p:1,fi:2,f:0},'mango shake':{c:35,p:3,fi:1,f:2},'mango slice':{c:15,p:0,fi:1,f:0},'apple':{c:25,p:0,fi:4,f:0},
   'orange':{c:18,p:1,fi:3,f:0},'grapes':{c:17,p:1,fi:1,f:0},'papaya':{c:12,p:1,fi:2,f:0},
   'guava':{c:14,p:2,fi:5,f:1},'pasta':{c:55,p:7,fi:2,f:1},'pizza':{c:70,p:12,fi:2,f:14},
   'burger':{c:45,p:15,fi:1,f:16},'sandwich':{c:30,p:10,fi:2,f:8},'oats':{c:27,p:5,fi:4,f:3},
@@ -913,43 +1347,324 @@ var FDB = {
 var ALIASES = {
   'chapatti':'chapati','chappati':'chapati','rotis':'roti','dhal':'dal','lentils':'dal',
   'panir':'paneer','aaloo':'aloo','alu':'aloo','gobhi':'gobi','cauliflower':'gobi',
-  'sabjee':'sabzi','sabzee':'sabzi','curry':'sabzi','eggs':'egg','omelette':'egg',
+  'sabjee':'sabzi','sabzee':'sabzi','subzi':'sabzi','subji':'sabji','curry':'sabzi','eggs':'egg','omelette':'egg',
   'dahi':'curd','maggi':'noodles','noodle':'noodles','choley':'chhole','chana':'chhole',
   'rajmah':'rajma','idlis':'idli','parantha':'paratha','spinach':'palak',
   'bhajia':'pakora','chhola':'chhole',
+  'phulkas':'phulka','fulka':'phulka',
+  'tea':'tea with milk','chai without sugar':'tea with milk no sugar',
+  'milk tea':'tea with milk','cutting chai':'tea with milk',
+  'cucumbers':'cucumber','kheera':'cucumber','kakdi':'cucumber',
+  'okra':'bhindi','lady finger':'bhindi','ladyfinger':'bhindi',
+  'almonds':'almond','badam':'almond',
+  'walnuts':'walnut','akhrot':'walnut',
+  'tomatoes':'tomato',
+
+  'chicken breast':'chicken','grilled chicken':'chicken',
+  'fried chicken':'chicken','roast chicken':'chicken',
+  'boiled chicken':'chicken','chicken kebab':'chicken tikka',
+  'murgh':'chicken','mutton kebab':'mutton',
+  'lamb':'mutton','lamb chop':'mutton',
+  'prawn masala':'prawn curry','fish fry':'fish',
+  'surmai':'fish','pomfret':'fish','rohu':'fish',
+  'paneer tikka':'paneer','malai kofta':'paneer',
+  'butter chicken':'chicken curry',
+  'dal makhani':'dal','dal tadka':'dal',
+  'palak paneer':'paneer','shahi paneer':'paneer',
+  /* Bread aliases */
+  'bhakri roti':'bhakri','millet roti':'bajra roti','bajri roti':'bajra roti',
+  'jwari roti':'jowar roti','corn roti':'makki roti','besan roti':'missi roti',
+  'kulcha naan':'kulcha','besan ka chilla':'besan chilla','cheela':'besan chilla',
+  /* Dal aliases */
+  'yellow dal':'toor dal','red dal':'masoor dal','black dal':'kali dal',
+  'dal makni':'dal makhani','black lentils':'kali dal','mung dal':'moong dal',
+  'black chana':'roasted chana',
+  /* Veg aliases */
+  'bottle gourd':'lauki','dudhi':'lauki','ghia':'lauki',
+  'ridge gourd':'turai','parwal':'parval','bitter gourd':'karela',
+  'yam':'suran','taro':'arbi','okra masala':'bhindi masala',
+  'brinjal':'baingan bharta','eggplant':'baingan bharta',
+  'paneer makhani':'paneer butter masala','butter paneer':'paneer butter masala',
+  /* Non veg aliases */
+  'chicken makhani':'butter chicken','murgh makhani':'butter chicken',
+  'roganjosh':'mutton rogan josh',
+  'mince':'keema','minced meat':'keema','keema curry':'keema',
+  'prawn curry':'prawn masala','shrimp':'prawn','jhinga':'prawn',
+  'anda bhurji':'egg bhurji','anda curry':'egg curry',
+  /* Snack aliases */
+  'pani puri':'sev puri','gol gappa':'sev puri','gupchup':'sev puri',
+  'dahi puri':'sev puri','papdi chaat':'bhel puri',
+  'sago khichdi':'sabudana khichdi','sabudana':'sabudana khichdi',
+  'puffed rice':'murmura','kurmura':'murmura',
+  /* Sweet aliases */
+  'ras gulla':'rasgulla','roshogolla':'rasgulla','milk cake':'barfi',
+  'kaju barfi':'kaju katli','carrot halwa':'gajar ka halwa',
+  'gajar halwa':'gajar ka halwa','rava halwa':'sooji halwa',
+  'semolina halwa':'sooji halwa',
+  /* Drink aliases */
+  'chai masala':'masala chai','spiced tea':'masala chai',
+  'chaas':'buttermilk','chhas':'buttermilk','mattha':'buttermilk',
+  'nariyal pani':'coconut water','tender coconut':'coconut water',
+  'lemon water':'nimbu pani','haldi doodh':'turmeric milk',
+  'golden milk':'turmeric milk',
+  /* Fruit aliases */
+  'sapota':'chikoo','sapodilla':'chikoo','cheeku':'chikoo',
+  'custard apple':'sitaphal','sharifa':'sitaphal',
+  'indian gooseberry':'amla','java plum':'jamun','black plum':'jamun','jambul':'jamun','jambolan':'jamun','naval pazham':'jamun',
+  'ananas':'pineapple','anaar':'pomegranate',
+  'aam':'mango','kairi':'mango','raw mango':'mango',
+  'kesar mango':'mango','alphonso':'mango','hapus':'mango',
+  'dasheri':'mango','langra':'mango','totapuri':'mango',
+  /* Breakfast aliases */
+  'oats porridge':'masala oats','daliya porridge':'daliya',
+  'toast butter':'bread butter','toast jam':'bread jam',
+  'rava cheela':'moong dal chilla',
+  /* Western aliases */
+  'fries':'french fries','chips':'potato chips','crisps':'potato chips',
+  'burger':'burger','cheeseburger':'cheeseburger','vegburger':'veggie burger',
+  'hotdog':'hot dog','frankfurter':'hot dog','sausage roll':'sausage',
+  'spagetti':'spaghetti','spaghetti bolognese':'spaghetti','bolognese':'spaghetti',
+  'mac n cheese':'mac and cheese','macaroni':'mac and cheese',
+  'lasagna':'lasagne','fettuccine':'pasta','linguine':'pasta',
+  'donut':'doughnut','donut':'doughnut','churros':'doughnut',
+  'yoghurt':'yogurt','greek yoghurt':'greek yogurt',
+  'coke':'cola','pepsi':'cola','soft drink':'cola','soda':'cola',
+  'juice':'orange juice','oj':'orange juice',
+  'flat white':'latte','mocha':'latte',
+  'smoothie bowl':'smoothie','fruit smoothie':'smoothie',
+  'sweet potato fries':'sweet potato','jacket potato':'baked potato',
+  'courgette':'zucchini','capsicum':'bell pepper','beetroot':'beet',
+  'spring onion':'onion','scallion':'onion',
+  'aubergine':'baingan bharta','eggplant':'baingan bharta',
+  'minced beef':'beef','ground beef':'beef','sirloin':'steak',
+  'ribeye':'steak','t-bone':'steak','fillet steak':'steak',
+  'pork belly':'pork','pork ribs':'pork','pulled pork':'pork',
+  'chicken breast':'grilled chicken','chicken thigh':'chicken',
+  'roast chicken':'chicken','rotisserie chicken':'chicken',
+  'smoked salmon':'salmon','grilled salmon':'salmon',
+  'fish fingers':'fish and chips','fish tacos':'taco',
+  'nachos and salsa':'nachos','tortilla chips':'nachos',
+  'pita':'pita bread','pitta':'pita bread',
+  'wrap tortilla':'wrap','flour tortilla':'wrap',
+  'corn tortilla':'taco','taco shell':'taco',
+  'sub sandwich':'sandwich','hoagie':'sandwich','hero':'sandwich',
+  'panini':'sandwich','ciabatta':'bread',
+};
+
+// Portion multipliers relative to 1 standard FDB serving
+// FDB standard serving = 1 medium katori/bowl for Indian, 1 standard cup for others
+var PORTIONS = {
+  /* Volume - Indian */
+  'katori':   1.0,  // standard ~150ml bowl
+  'bowl':     1.2,  // slightly larger ~180ml
+  'big bowl': 2.0,
+  'large bowl':2.0,
+  'small bowl':0.6,
+  'cup':      1.0,  // ~240ml
+  'small cup':0.5,
+  'big cup':  1.5,
+  'mug':      1.5,
+  'glass':    1.0,
+  'half cup': 0.5,
+  'quarter cup':0.25,
+  'plate':    2.0,  // full plate = 2 standard servings
+  'full plate':2.5,
+  'half plate':1.0,
+  'thali':    3.0,  // full thali
+  /* Volume - Western */
+  'tbsp':     0.15, // tablespoon
+  'tablespoon':0.15,
+  'tsp':      0.05, // teaspoon
+  'teaspoon': 0.05,
+  'ml':       0.005,// per ml (FDB ~200ml serving)
+  'litre':    5.0,
+  'liter':    5.0,
+  /* Weight */
+  'g':        0.005,// per gram (FDB ~200g serving)
+  'gram':     0.005,
+  'grams':    0.005,
+  'kg':       5.0,
+  '100g':     0.5,
+  '200g':     1.0,
+  '250g':     1.25,
+  /* Pieces / Units */
+  'piece':    1.0,
+  'pieces':   1.0,
+  'slice':    0.5,  // bread/cake slice = half serving
+  'slices':   0.5,
+  'whole':    2.0,
+  'half':     0.5,
+  'quarter':  0.25,
+  /* Indian specific */
+  'roti':     1.0,  // 1 roti = 1 serving
+  'chapati':  1.0,
+  'paratha':  1.0,
+  'puri':     1.0,
+  'idli':     1.0,
 };
 
 function parseFoodText(raw) {
   var result = [];
   if(!raw||!raw.trim()) return result;
-  raw = raw.toLowerCase().trim().replace(/\band\b/gi,',').replace(/[+&]/g,',');
+  raw = raw.toLowerCase().trim()
+    .replace(/\band\b/gi,',')
+    .replace(/[+&]/g,',');
   var items = raw.split(',');
+
   for(var i=0;i<items.length;i++){
-    var item = items[i].trim(); if(!item) continue;
-    var nm = item.match(/^(\d+\.?\d*)\s+(.*)/);
-    var qty = nm ? parseFloat(nm[1]) : 1;
-    var text = nm ? nm[2].trim() : item;
+    var item = items[i].trim();
+    if(!item) continue;
+
+    // Pattern 1: "2 cups dal"  "1 bowl rice"  "3 tbsp ghee"
+    // Pattern 2: "2 dal"       (just number + food, no unit)
+    // Pattern 3: "dal"         (no number, no unit)
+
+    var qty   = 1;
+    var unit  = null;
+    var text  = item;
+    var unitMultiplier = 1.0;
+    var portionLabel   = '';
+
+    // Try: NUMBER UNIT FOOD  e.g. "2 cups dal", "1 bowl rice", "3 tbsp ghee"
+    // Try two-word unit first ("big bowl", "half cup"), then single-word unit ("cup","bowl")
+    var unitFound = false;
+
+    // Two-word unit: "1 big bowl dal"
+    var m3b = item.match(/^(\d+\.?\d*)\s+(\w+\s+\w+)\s+(.+)/);
+    if(m3b && PORTIONS[m3b[2].trim()] !== undefined){
+      qty  = parseFloat(m3b[1]);
+      unit = m3b[2].trim();
+      text = m3b[3].trim();
+      unitMultiplier = PORTIONS[unit];
+      portionLabel   = qty + ' ' + unit;
+      unitFound = true;
+    }
+
+    // Single-word unit: "1 cup dal", "1 bowl rice"
+    if(!unitFound){
+      var m3a = item.match(/^(\d+\.?\d*)\s+(\w+)\s+(.+)/);
+      if(m3a && PORTIONS[m3a[2].trim()] !== undefined){
+        qty  = parseFloat(m3a[1]);
+        unit = m3a[2].trim();
+        text = m3a[3].trim();
+        unitMultiplier = PORTIONS[unit];
+        portionLabel   = qty + ' ' + unit;
+        unitFound = true;
+      }
+    }
+
+    // If no unit matched, try: NUMBER FOOD  e.g. "2 dal", "3 chapati"
+    if(!unit){
+      var m2 = item.match(/^(\d+\.?\d*)\s+(.*)/);
+      if(m2){
+        qty  = parseFloat(m2[1]);
+        text = m2[2].trim();
+        portionLabel = qty > 1 ? qty + '' : '';
+      }
+    }
+
+    // Resolve aliases
     if(ALIASES[text]) text = ALIASES[text];
+
+    // Match food in FDB — prefer LONGER keys (more specific match wins)
     var key = FDB[text] ? text : null;
-    if(!key){ var ks=Object.keys(FDB); for(var k=0;k<ks.length;k++){ if(text.length>=3&&(ks[k].indexOf(text)===0||text.indexOf(ks[k])===0)){key=ks[k];break;} } }
-    if(!key){ var ks2=Object.keys(FDB); for(var k2=0;k2<ks2.length;k2++){ if(text.length>=4&&(ks2[k2].indexOf(text)>=0||text.indexOf(ks2[k2])>=0)){key=ks2[k2];break;} } }
-    if(key){ var fd=FDB[key]; result.push({name:key+(qty!==1?' \u00d7'+qty:''),c:Math.round(fd.c*qty),p:Math.round(fd.p*qty),fi:Math.round(fd.fi*qty),f:Math.round(fd.f*qty)}); }
+    if(!key){
+      var ks=Object.keys(FDB);
+      // Collect all matches, pick the longest key (most specific)
+      var bestKey=null, bestLen=0;
+      for(var k=0;k<ks.length;k++){
+        if(text.length>=3 && (ks[k].indexOf(text)===0 || text.indexOf(ks[k])===0)){
+          if(ks[k].length > bestLen){ bestKey=ks[k]; bestLen=ks[k].length; }
+        }
+      }
+      key = bestKey;
+    }
+    if(!key){
+      var ks2=Object.keys(FDB);
+      var bestKey2=null, bestLen2=0;
+      for(var k2=0;k2<ks2.length;k2++){
+        if(text.length>=4 && (ks2[k2].indexOf(text)>=0 || text.indexOf(ks2[k2])>=0)){
+          if(ks2[k2].length > bestLen2){ bestKey2=ks2[k2]; bestLen2=ks2[k2].length; }
+        }
+      }
+      key = bestKey2;
+    }
+
+    if(key){
+      var fd  = FDB[key];
+      var mul = qty * unitMultiplier;
+      // Build display name with portion info
+      var displayName = key;
+      if(portionLabel)   displayName += ' (' + portionLabel + ')';
+      else if(qty !== 1) displayName += ' \u00d7' + qty;
+
+      result.push({
+        name: displayName,
+        c:  Math.round(fd.c  * mul),
+        p:  Math.round(fd.p  * mul),
+        fi: Math.round(fd.fi * mul),
+        f:  Math.round(fd.f  * mul),
+        portion: portionLabel || (qty!==1 ? '\u00d7'+qty : '1 serving')
+      });
+    }
   }
   return result;
 }
 
+function calcCals(c, p, fi, f) {
+  // Standard Atwater factors: carbs=4, protein=4, fat=9 kcal/g
+  // Fiber calories are minimal/not absorbed - excluded
+  return Math.round((c * 4) + (p * 4) + (f * 9));
+}
+
 function updateMacroDisplay() {
-  var tot = {c:0,p:0,fi:0,f:0};
+  var tot = {c:0, p:0, fi:0, f:0};
   foods.forEach(function(fd){ tot.c+=fd.c; tot.p+=fd.p; tot.fi+=fd.fi; tot.f+=fd.f; });
+
+  var totalCals  = calcCals(tot.c, tot.p, tot.fi, tot.f);
+  var carbsCals  = Math.round(tot.c * 4);
+  var protCals   = Math.round(tot.p * 4);
+  var fatCals    = Math.round(tot.f * 9);
+
+  // Update calorie display
+  var calEl = document.getElementById('m-cals');
+  if(calEl) calEl.textContent = totalCals;
+  var breakEl = document.getElementById('m-cal-breakdown');
+  if(breakEl) breakEl.innerHTML =
+    'Carbs: '+carbsCals+' kcal<br>Protein: '+protCals+' kcal<br>Fat: '+fatCals+' kcal';
+
+  // Update macro boxes
   document.getElementById('m-carbs').textContent   = tot.c;
   document.getElementById('m-protein').textContent = tot.p;
   document.getElementById('m-fiber').textContent   = tot.fi;
   document.getElementById('m-fat').textContent     = tot.f;
+
+  // Update edit inputs
   document.getElementById('i-carbs').value   = tot.c;
   document.getElementById('i-protein').value = tot.p;
   document.getElementById('i-fiber').value   = tot.fi;
   document.getElementById('i-fat').value     = tot.f;
+
   renderChips();
+}
+
+// Recalculate calories live when user edits macro inputs manually
+function recalcCalsFromInputs() {
+  var c  = parseFloat(document.getElementById('i-carbs').value)   || 0;
+  var p  = parseFloat(document.getElementById('i-protein').value)  || 0;
+  var fi = parseFloat(document.getElementById('i-fiber').value)    || 0;
+  var f  = parseFloat(document.getElementById('i-fat').value)      || 0;
+  var totalCals = calcCals(c, p, fi, f);
+  var calEl = document.getElementById('m-cals');
+  if(calEl) calEl.textContent = totalCals;
+  var breakEl = document.getElementById('m-cal-breakdown');
+  if(breakEl) breakEl.innerHTML =
+    'Carbs: '+Math.round(c*4)+' kcal<br>Protein: '+Math.round(p*4)+' kcal<br>Fat: '+Math.round(f*9)+' kcal';
+  // Also update the display boxes
+  document.getElementById('m-carbs').textContent   = c;
+  document.getElementById('m-protein').textContent = p;
+  document.getElementById('m-fiber').textContent   = fi;
+  document.getElementById('m-fat').textContent     = f;
 }
 
 function quickAdd(name,c,p,fi,f) {
@@ -962,20 +1677,175 @@ function quickAdd(name,c,p,fi,f) {
 function calcFood() {
   var txt = document.getElementById('c-food').value.trim();
   var parsed = parseFoodText(txt);
+
+  // Separate: items recognised in DB vs items NOT recognised
+  var recognised = [];
+  var unrecognised = [];
+
+  if(txt) {
+    // Figure out which parts of the text were NOT recognised
+    // by checking if parsed covers the whole input
+    var rawItems = txt.toLowerCase()
+      .replace(/and/gi, ',').replace(/[+&]/g, ',')
+      .split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+
+    rawItems.forEach(function(rawItem) {
+      // Strip leading number
+      var nm = rawItem.match(/^(\d+\.?\d*)\s+(.*)/);
+      var itemText = nm ? nm[2].trim() : rawItem;
+      // Check if it was found in DB
+      var found = parsed.some(function(p) {
+        return p.name.toLowerCase().indexOf(itemText.split(' ')[0]) >= 0
+          || itemText.indexOf(p.name.split(' x')[0].toLowerCase()) >= 0;
+      });
+      if(!found && itemText.length > 1) unrecognised.push(rawItem);
+    });
+  }
+
+  // Add recognised items to foods array
   parsed.forEach(function(item){
     var exists = foods.some(function(f){return f.name===item.name;});
     if(!exists) foods.push(item);
   });
-  if(foods.length===0){
-    if(!txt){ showToast('Tap a food button or type a meal'); return; }
-    foods.push({name:txt,c:45,p:8,fi:3,f:6});
-    showToast('Unknown food \u2013 using generic estimate');
+
+  // If everything recognised OR no text, show immediately
+  if(unrecognised.length === 0) {
+    if(foods.length === 0) {
+      if(!txt){ showToast('Tap a food button or type a meal'); return; }
+    }
+    _finishCalcFood();
+    return;
   }
+
+  // Some items not recognised — try AI if API key available
+  var apiKey = localStorage.getItem('gw_apikey');
+  if(apiKey) {
+    // Use AI for unrecognised items
+    _aiLookupFoods(unrecognised, apiKey);
+  } else {
+    // No API key — use generic fallback for unrecognised items
+    if(foods.length === 0 && unrecognised.length > 0) {
+      // Nothing at all recognised — full generic fallback
+      foods.push({name: txt, c:45, p:8, fi:3, f:6});
+      showToast('Foods not in database. Add API key in Settings for AI lookup of any food.');
+    } else if(unrecognised.length > 0) {
+      // Some recognised, some not
+      showToast(unrecognised.length + ' food(s) not recognised. Add API key in Settings for AI lookup.');
+    }
+    _finishCalcFood();
+  }
+}
+
+function _finishCalcFood() {
   updateMacroDisplay();
   document.getElementById('macro-edit-link').style.display = 'block';
   var cb = document.getElementById('m-carbs');
   if(cb){ cb.style.transition='transform .18s'; cb.style.transform='scale(1.15)'; setTimeout(function(){cb.style.transform='scale(1)';},200); }
-  showToast('\u2713 Macros calculated \u2013 now tap Calculate dose');
+  var _totCals = calcCals(
+    parseFloat(document.getElementById('m-carbs').textContent)||0,
+    parseFloat(document.getElementById('m-protein').textContent)||0,
+    parseFloat(document.getElementById('m-fiber').textContent)||0,
+    parseFloat(document.getElementById('m-fat').textContent)||0
+  );
+  showToast('Macros: '+document.getElementById('m-carbs').textContent+'g carbs, '+_totCals+' kcal - tap Calculate dose');
+}
+
+function _aiLookupFoods(foodList, apiKey) {
+  // Show loading state
+  var btn = document.getElementById('btn-calc-food');
+  if(btn){ btn.textContent = 'Looking up foods with AI...'; btn.disabled = true; }
+  var cb = document.getElementById('m-carbs');
+  if(cb) cb.textContent = '...';
+
+  var prompt = 'You are a nutrition database. For each food item listed below, ' +
+    'provide the nutritional values per STANDARD SINGLE SERVING (typical Indian/restaurant portion). ' +
+    'Respond ONLY with a valid JSON array, no other text, no markdown, no explanation. ' +
+    'Each item: {"name":"food name","serving":"e.g. 1 cup / 100g / 1 piece",' +
+    '"carbs":number,"protein":number,"fiber":number,"fat":number,"calories":number} ' +
+    'All values in grams. Calories in kcal. ' +
+    'Foods to look up: ' + foodList.join(', ');
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    if(btn){ btn.innerHTML = '<i class="ti ti-salad" style="margin-right:6px;vertical-align:-2px"></i>Calculate carbs & macros'; btn.disabled = false; }
+
+    if(data.error) {
+      showToast('AI error: ' + data.error.message);
+      _finishCalcFood(); return;
+    }
+
+    var text = data.content && data.content[0] ? data.content[0].text : '';
+    // Strip any markdown fences
+    text = text.replace(/```json|```/g, '').trim();
+
+    var aiItems;
+    try { aiItems = JSON.parse(text); } catch(e) {
+      showToast('AI response could not be parsed - using estimates');
+      _finishCalcFood(); return;
+    }
+
+    if(!Array.isArray(aiItems)) aiItems = [aiItems];
+
+    // Add AI-fetched items to foods
+    aiItems.forEach(function(item) {
+      if(!item || typeof item.carbs === 'undefined') return;
+      var exists = foods.some(function(f){ return f.name.toLowerCase() === item.name.toLowerCase(); });
+      if(!exists) {
+        foods.push({
+          name: item.name + (item.serving ? ' ('+item.serving+')' : ''),
+          c:  Math.round(item.carbs   || 0),
+          p:  Math.round(item.protein || 0),
+          fi: Math.round(item.fiber   || 0),
+          f:  Math.round(item.fat     || 0),
+          aiLooked: true
+        });
+      }
+    });
+
+    showToast('AI found ' + aiItems.length + ' food(s)');
+    _finishCalcFood();
+  })
+  .catch(function(err) {
+    if(btn){ btn.innerHTML = '<i class="ti ti-salad" style="margin-right:6px;vertical-align:-2px"></i>Calculate carbs & macros'; btn.disabled = false; }
+    showToast('AI lookup failed - check API key in Settings');
+    _finishCalcFood();
+  });
+}
+
+function testApiKey() {
+  var keyEl = document.getElementById('s-apikey');
+  var statusEl = document.getElementById('apikey-status');
+  if(!keyEl) return;
+  var key = keyEl.value.trim();
+  if(!key || key.startsWith('\u2022')) {
+    key = localStorage.getItem('gw_apikey') || '';
+  }
+  if(!key){ statusEl.textContent = 'Enter an API key first'; statusEl.style.color='var(--red)'; return; }
+  statusEl.textContent = 'Testing...'; statusEl.style.color = 'var(--muted)';
+  fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:20,messages:[{role:'user',content:'Reply with just: OK'}]})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.error){ statusEl.textContent='Invalid key: '+data.error.message; statusEl.style.color='var(--red)'; }
+    else {
+      localStorage.setItem('gw_apikey', key);
+      statusEl.textContent = 'API key works! AI food lookup is active.';
+      statusEl.style.color = 'var(--green)';
+    }
+  })
+  .catch(function(){ statusEl.textContent='Connection failed - check internet'; statusEl.style.color='var(--red)'; });
 }
 
 function renderChips() {
@@ -1177,6 +2047,8 @@ function resetCalc() {
   foods=[]; renderChips();
   document.getElementById('c-food').value='';
   ['m-carbs','m-protein','m-fiber','m-fat'].forEach(function(id){document.getElementById(id).textContent='0';});
+  var calEl=document.getElementById('m-cals'); if(calEl) calEl.textContent='0';
+  var brkEl=document.getElementById('m-cal-breakdown'); if(brkEl) brkEl.innerHTML='Carbs: 0 kcal<br>Protein: 0 kcal<br>Fat: 0 kcal';
   ['i-carbs','i-protein','i-fiber','i-fat'].forEach(function(id){document.getElementById(id).value=0;});
   document.getElementById('macro-edit-link').style.display='none';
   document.getElementById('macro-inputs').style.display='none';
@@ -1371,6 +2243,13 @@ function saveSettings() {
   S.target2hr= parseInt(document.getElementById('s-target2hr').value)||180;
   S.bkfst    = parseInt(document.getElementById('s-bkfst').value)||15;
   DB.saveSettings(S);
+  // Save API key separately (not in settings object for safety)
+  var apiKeyEl = document.getElementById('s-apikey');
+  if(apiKeyEl && apiKeyEl.value.trim().startsWith('sk-ant-')) {
+    localStorage.setItem('gw_apikey', apiKeyEl.value.trim());
+    document.getElementById('apikey-status').textContent = 'API key saved';
+    document.getElementById('apikey-status').style.color = 'var(--green)';
+  }
   var now=new Date();
   var ts=now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' \u00b7 '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
   var e=document.getElementById('s-ts'); if(e) e.textContent=ts;
@@ -1389,6 +2268,15 @@ function loadSettings() {
   document.getElementById('s-isf').value     = S.isf;
   document.getElementById('s-target2hr').value = S.target2hr;
   document.getElementById('s-bkfst').value   = S.bkfst;
+  // Load API key
+  var savedKey = localStorage.getItem('gw_apikey') || '';
+  var keyEl = document.getElementById('s-apikey');
+  var statusEl = document.getElementById('apikey-status');
+  if(keyEl) keyEl.value = savedKey ? '••••••••••••' + savedKey.slice(-6) : '';
+  if(statusEl) {
+    statusEl.textContent = savedKey ? 'API key saved and active' : 'No API key saved';
+    statusEl.style.color = savedKey ? 'var(--green)' : 'var(--muted)';
+  }
 }
 
 // ═══════════════════════════════════════════════════════
