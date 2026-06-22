@@ -1366,7 +1366,10 @@ var FDB = {
 var ALIASES = {
   'chapatti':'chapati','chappati':'chapati','rotis':'roti','dhal':'dal','lentils':'dal',
   'panir':'paneer','aaloo':'aloo','alu':'aloo','gobhi':'gobi','cauliflower':'gobi',
-  'sabjee':'sabzi','sabzee':'sabzi','subzi':'sabzi','subji':'sabji','curry':'sabzi','eggs':'egg','omelette':'egg',
+  'sabjee':'sabzi','sabzee':'sabzi','subzi':'sabzi','subji':'sabji','curry':'sabzi',
+  'eggs':'egg','boiled eggs':'boiled egg','fried eggs':'fried egg','scrambled eggs':'scrambled egg',
+  'hard boiled egg':'boiled egg','hard boiled eggs':'boiled egg','poached egg':'boiled egg','poached eggs':'boiled egg',
+  'omelette':'scrambled egg','omelet':'scrambled egg','egg omelette':'scrambled egg',
   'dahi':'curd','maggi':'noodles','noodle':'noodles','choley':'chhole','chana':'chhole',
   'rajmah':'rajma','idlis':'idli','parantha':'paratha','spinach':'palak',
   'bhajia':'pakora','chhola':'chhole',
@@ -1379,9 +1382,9 @@ var ALIASES = {
   'walnuts':'walnut','akhrot':'walnut',
   'tomatoes':'tomato',
 
-  'chicken breast':'chicken','grilled chicken':'chicken',
-  'fried chicken':'chicken','roast chicken':'chicken',
-  'boiled chicken':'chicken','chicken kebab':'chicken tikka',
+  'chicken breast':'grilled chicken',
+  'roast chicken':'grilled chicken',
+  'boiled chicken':'grilled chicken','chicken kebab':'chicken tikka',
   'murgh':'chicken','mutton kebab':'mutton',
   'lamb':'mutton','lamb chop':'mutton',
   'prawn masala':'prawn curry','fish fry':'fish',
@@ -1526,8 +1529,11 @@ function parseFoodText(raw) {
   var result = [];
   if(!raw||!raw.trim()) return result;
   raw = raw.toLowerCase().trim()
-    .replace(/\band\b/gi,',')
-    .replace(/[+&]/g,',');
+    .replace(/\balong with\b/gi, ',')
+    .replace(/\band\b/gi, ',')
+    .replace(/\bwith\b/gi, ',')
+    .replace(/\bplus\b/gi, ',')
+    .replace(/[+&]/g, ',');
   var items = raw.split(',');
 
   for(var i=0;i<items.length;i++){
@@ -1694,6 +1700,7 @@ function quickAdd(name,c,p,fi,f) {
 }
 
 function calcFood() {
+  foods = [];
   var txt = document.getElementById('c-food').value.trim();
   var parsed = parseFoodText(txt);
 
@@ -1722,10 +1729,7 @@ function calcFood() {
   }
 
   // Add recognised items to foods array
-  parsed.forEach(function(item){
-    var exists = foods.some(function(f){return f.name===item.name;});
-    if(!exists) foods.push(item);
-  });
+  parsed.forEach(function(item){ foods.push(item); });
 
   // If everything recognised OR no text, show immediately
   if(unrecognised.length === 0) {
@@ -1870,7 +1874,9 @@ function testApiKey() {
 function renderChips() {
   var e = document.getElementById('food-chips'); if(!e) return;
   e.innerHTML = foods.map(function(fd,i){
-    return '<span class="chip">'+fd.name+' <span class="cv">'+fd.c+'g</span><span class="chip-x" onclick="removeChip('+i+')"><i class="ti ti-x" style="font-size:15px"></i></span></span>';
+    var cals = Math.round((fd.c*4)+(fd.p*4)+(fd.f*9));
+    var label = fd.c > 0 ? fd.c+'g carbs' : cals+'kcal';
+    return '<span class="chip">'+fd.name+' <span class="cv">'+label+'</span><span class="chip-x" onclick="removeChip('+i+')"><i class="ti ti-x" style="font-size:15px"></i></span></span>';
   }).join('');
 }
 
