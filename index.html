@@ -1903,6 +1903,18 @@ function updateGTag() {
 // ═══════════════════════════════════════════════════════
 // VOICE INPUT
 // ═══════════════════════════════════════════════════════
+function spokenToNum(s) {
+  var map = {
+    'zero':'0','one':'1','two':'2','to':'2','too':'2','three':'3',
+    'four':'4','for':'4','fore':'4','five':'5','six':'6','seven':'7',
+    'eight':'8','ate':'8','nine':'9','ten':'10','eleven':'11','twelve':'12',
+    'half':'0.5','a':'1','an':'1'
+  };
+  return s.replace(/(zero|one|two|to|too|three|four|for|fore|five|six|seven|eight|ate|nine|ten|eleven|twelve|half|an?)/gi, function(m){
+    return map[m.toLowerCase()] !== undefined ? map[m.toLowerCase()] : m;
+  });
+}
+
 function voiceInput() {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   var isFile = window.location.protocol === 'file:';
@@ -1914,6 +1926,7 @@ function voiceInput() {
   var existingFood = document.getElementById('c-food').value.trim();
   rec.onresult = function(e){
     var t=''; for(var i=0;i<e.results.length;i++) t+=e.results[i][0].transcript;
+    t = spokenToNum(t);
     document.getElementById('c-food').value = existingFood ? existingFood+', '+t : t;
     if(e.results[e.results.length-1].isFinal){ if(btn){btn.style.background='';btn.style.color='';} showToast('\u2713 Heard: "'+t+'"'); calcFood(); }
   };
@@ -1945,8 +1958,7 @@ function addVC(food) {
 function confirmVoice() {
   var ta=document.getElementById('vt-input'); if(!ta) return;
   var t=ta.value.trim(); if(!t){ ta.style.borderColor='var(--red)'; return; }
-  var cur=document.getElementById('c-food').value.trim();
-  document.getElementById('c-food').value = cur ? cur+', '+t : t;
+  document.getElementById('c-food').value=t;
   var m=document.getElementById('voice-modal'); if(m) m.remove();
   calcFood();
 }
