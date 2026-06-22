@@ -1264,6 +1264,8 @@ var FDB = {
   'sev puri':{c:28,p:4,fi:2,f:6},
   'ragda pattice':{c:35,p:6,fi:3,f:6},
   'aloo tikki':{c:28,p:4,fi:2,f:8},
+  'vegetable tikki':{c:22,p:3,fi:2,f:6},'veg tikki':{c:22,p:3,fi:2,f:6},
+  'poha tikki':{c:25,p:3,fi:2,f:5},'poha vegetable tikki':{c:24,p:3,fi:2,f:5},
   'bread pakora':{c:30,p:6,fi:1,f:12},
   'onion pakora':{c:18,p:3,fi:1,f:8},
   'kachori':{c:32,p:5,fi:2,f:12},
@@ -1364,9 +1366,13 @@ var FDB = {
   'soup':{c:10,p:3,fi:1,f:2},'noodles':{c:50,p:6,fi:2,f:4},'cornflakes':{c:40,p:3,fi:1,f:0},
 };
 var ALIASES = {
+  'veg tikki':'vegetable tikki','poha veg tikki':'poha vegetable tikki',
   'chapatti':'chapati','chappati':'chapati','rotis':'roti','dhal':'dal','lentils':'dal',
   'panir':'paneer','aaloo':'aloo','alu':'aloo','gobhi':'gobi','cauliflower':'gobi',
-  'sabjee':'sabzi','sabzee':'sabzi','subzi':'sabzi','subji':'sabji','curry':'sabzi','eggs':'egg','omelette':'egg',
+  'sabjee':'sabzi','sabzee':'sabzi','subzi':'sabzi','subji':'sabji','curry':'sabzi',
+  'eggs':'egg','boiled eggs':'boiled egg','fried eggs':'fried egg','scrambled eggs':'scrambled egg',
+  'hard boiled egg':'boiled egg','hard boiled eggs':'boiled egg','poached egg':'boiled egg','poached eggs':'boiled egg',
+  'omelette':'scrambled egg','omelet':'scrambled egg','egg omelette':'scrambled egg',
   'dahi':'curd','maggi':'noodles','noodle':'noodles','choley':'chhole','chana':'chhole',
   'rajmah':'rajma','idlis':'idli','parantha':'paratha','spinach':'palak',
   'bhajia':'pakora','chhola':'chhole',
@@ -1379,9 +1385,9 @@ var ALIASES = {
   'walnuts':'walnut','akhrot':'walnut',
   'tomatoes':'tomato',
 
-  'chicken breast':'chicken','grilled chicken':'chicken',
-  'fried chicken':'chicken','roast chicken':'chicken',
-  'boiled chicken':'chicken','chicken kebab':'chicken tikka',
+  'grilled chicken':'grilled chicken',
+  'fried chicken':'fried chicken','roast chicken':'grilled chicken',
+  'boiled chicken':'grilled chicken','chicken kebab':'chicken tikka',
   'murgh':'chicken','mutton kebab':'mutton',
   'lamb':'mutton','lamb chop':'mutton',
   'prawn masala':'prawn curry','fish fry':'fish',
@@ -1526,8 +1532,11 @@ function parseFoodText(raw) {
   var result = [];
   if(!raw||!raw.trim()) return result;
   raw = raw.toLowerCase().trim()
-    .replace(/\band\b/gi,',')
-    .replace(/[+&]/g,',');
+    .replace(/\balong with\b/gi, ',')
+    .replace(/\band\b/gi, ',')
+    .replace(/\bwith\b/gi, ',')
+    .replace(/\bplus\b/gi, ',')
+    .replace(/[+&]/g, ',');
   var items = raw.split(',');
 
   for(var i=0;i<items.length;i++){
@@ -1582,6 +1591,8 @@ function parseFoodText(raw) {
       }
     }
 
+    // Strip size modifiers before lookup
+    text = text.replace(/^(small|medium|large|big|tiny)\s+/i,'').trim();
     // Resolve aliases
     if(ALIASES[text]) text = ALIASES[text];
 
@@ -1706,7 +1717,7 @@ function calcFood() {
     // Figure out which parts of the text were NOT recognised
     // by checking if parsed covers the whole input
     var rawItems = txt.toLowerCase()
-      .replace(/and/gi, ',').replace(/[+&]/g, ',')
+      .replace(/\balong with\b/gi,',').replace(/\band\b/gi,',').replace(/\bwith\b/gi,',').replace(/\bplus\b/gi,',').replace(/[+&]/g,',')
       .split(',').map(function(s){ return s.trim(); }).filter(Boolean);
 
     rawItems.forEach(function(rawItem) {
@@ -1871,7 +1882,9 @@ function testApiKey() {
 function renderChips() {
   var e = document.getElementById('food-chips'); if(!e) return;
   e.innerHTML = foods.map(function(fd,i){
-    return '<span class="chip">'+fd.name+' <span class="cv">'+fd.c+'g</span><span class="chip-x" onclick="removeChip('+i+')"><i class="ti ti-x" style="font-size:15px"></i></span></span>';
+    var cals = Math.round((fd.c*4)+(fd.p*4)+(fd.f*9));
+    var label = fd.c > 0 ? fd.c+'g carbs' : cals+'kcal';
+    return '<span class="chip">'+fd.name+' <span class="cv">'+label+'</span><span class="chip-x" onclick="removeChip('+i+')"><i class="ti ti-x" style="font-size:15px"></i></span></span>';
   }).join('');
 }
 
