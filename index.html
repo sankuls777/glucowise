@@ -1910,7 +1910,7 @@ function spokenToNum(s) {
     'eight':'8','ate':'8','nine':'9','ten':'10','eleven':'11','twelve':'12',
     'half':'0.5','a':'1','an':'1'
   };
-  return s.replace(/(zero|one|two|to|too|three|four|for|fore|five|six|seven|eight|ate|nine|ten|eleven|twelve|half|an?)/gi, function(m){
+  return s.replace(/\b(zero|one|two|to|too|three|four|for|fore|five|six|seven|eight|ate|nine|ten|eleven|twelve|half|an?)\b/gi, function(m){
     return map[m.toLowerCase()] !== undefined ? map[m.toLowerCase()] : m;
   });
 }
