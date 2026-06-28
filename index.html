@@ -75,8 +75,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .btrack{background:var(--bg2);border-radius:4px;height:8px;margin-top:5px;overflow:hidden}
 .bfill{height:100%;border-radius:4px}.bfill.teal{background:var(--teal-mid)}.bfill.amber{background:var(--amber)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;min-height:4px}
-.chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:13px}
-.chip .cv{color:var(--teal);font-weight:700;font-size:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:#0F6E56;border:1px solid #085041;border-radius:20px;padding:5px 12px;font-size:13px;color:#fff}
+.chip .cv{color:#a7f3d0;font-weight:700;font-size:12px}
 .chip-x{cursor:pointer;color:var(--muted);display:flex;align-items:center}
 .tpill{padding:7px 15px;border-radius:20px;font-size:13px;cursor:pointer;border:1px solid var(--border2);background:var(--bg);color:var(--muted);font-family:inherit;font-weight:600}
 .tpill.active{background:var(--teal-light);color:var(--teal);border-color:var(--teal)}
@@ -468,11 +468,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <!-- Food entry -->
   <div class="sec">What are you eating?</div>
   <div style="padding:0 14px 6px">
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <input type="text" id="nif-food" placeholder="e.g. 2 chapati, dal, paneer, rice…" style="flex:1" autocomplete="off">
-      <button id="nif-mic-btn" onclick="nifVoiceInput()" style="padding:10px 13px;border-radius:10px;border:1px solid var(--border2);background:var(--teal-light);cursor:pointer;color:var(--teal);flex-shrink:0" aria-label="Voice input">
-        <i class="ti ti-microphone" style="font-size:20px"></i>
-      </button>
+    <div style="margin-bottom:8px">
+      <input type="text" id="nif-food" placeholder="e.g. 1.5 phulka, 0.25 cup subzi, 1 cup sambhar, 0.25 cup curd…" style="width:100%" autocomplete="off">
     </div>
     <!-- Quick add buttons -->
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
@@ -778,9 +775,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
   <div class="sec">What are you eating?</div>
   <div style="padding:0 14px 6px">
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <input type="text" id="c-food" placeholder="e.g. 2 chapati, dal, paneer, rice…" style="flex:1" autocomplete="off">
-      <button id="mic-btn" onclick="voiceInput()" style="padding:10px 13px;border-radius:10px;border:1px solid var(--border2);background:var(--teal-light);cursor:pointer;color:var(--teal);flex-shrink:0" aria-label="Voice input"><i class="ti ti-microphone" style="font-size:20px"></i></button>
+    <div style="margin-bottom:8px">
+      <input type="text" id="c-food" placeholder="e.g. 1.5 phulka, 0.25 cup subzi, 1 cup sambhar, 0.25 cup curd…" style="width:100%" autocomplete="off">
+
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
       <button class="btn-sm" onclick="quickAdd('2 chapati',40,6,4,2)">2 chapati</button>
@@ -2105,7 +2102,7 @@ var FDB = {
   'paratha':{c:30,p:4,fi:2,f:6},'puri':{c:20,p:3,fi:1,f:5},'bhatura':{c:40,p:6,fi:1,f:8},
   'bread':{c:25,p:4,fi:2,f:1},'idli':{c:18,p:3,fi:1,f:0},'dosa':{c:30,p:3,fi:1,f:2},
   'uttapam':{c:35,p:4,fi:2,f:3},'upma':{c:30,p:4,fi:2,f:3},'poha':{c:36,p:3,fi:2,f:2},
-  'appam':{c:32,p:3,fi:1,f:1},'sambar':{c:18,p:5,fi:4,f:3},'rasam':{c:6,p:1,fi:1,f:1},
+  'appam':{c:32,p:3,fi:1,f:1},'sambar':{c:18,p:5,fi:4,f:3},'sambhar':{c:18,p:5,fi:4,f:3},'saambar':{c:18,p:5,fi:4,f:3},'rasam':{c:6,p:1,fi:1,f:1},
   'rice':{c:45,p:3,fi:1,f:0},'biryani':{c:55,p:12,fi:2,f:8},'pulao':{c:48,p:5,fi:1,f:4},
   'khichdi':{c:40,p:8,fi:3,f:2},'dal':{c:18,p:8,fi:4,f:2},'daal':{c:18,p:8,fi:4,f:2},
   'rajma':{c:35,p:9,fi:6,f:1},'chhole':{c:28,p:8,fi:5,f:2},'chole':{c:28,p:8,fi:5,f:2},
@@ -2420,7 +2417,7 @@ var FDB = {
   'chicken kebab':{c:5,p:22,fi:0,f:8},
   'chicken 65':{c:8,p:20,fi:0,f:12},
   'chicken korma':{c:10,p:20,fi:1,f:16},
-  'chicken curry':{c:8,p:22,fi:1,f:10},
+  'chicken gravy':{c:5,p:18,fi:0,f:8},'chicken curry':{c:8,p:22,fi:1,f:10},
   'mutton curry':{c:6,p:20,fi:1,f:14},
   'mutton biryani':{c:52,p:20,fi:2,f:12},
   'mutton rogan josh':{c:8,p:22,fi:1,f:16},
@@ -2544,7 +2541,10 @@ var ALIASES = {
   'veg tikki':'vegetable tikki','poha veg tikki':'poha vegetable tikki',
   'chapatti':'chapati','chappati':'chapati','rotis':'roti','dhal':'dal','lentils':'dal',
   'panir':'paneer','aaloo':'aloo','alu':'aloo','gobhi':'gobi','cauliflower':'gobi',
-  'sabjee':'sabzi','sabzee':'sabzi','subzi':'sabzi','subji':'sabji','curry':'sabzi',
+  'sabjee':'sabzi','sabzee':'sabzi','subzi':'sabzi','subji':'sabzi','sabji':'sabzi','bhaji':'sabzi','bhaaji':'sabzi','curry':'sabzi',
+  'sambhar':'sambar','saambar':'sambar','sambhaar':'sambar',
+  'chicken gravy':'chicken curry','mutton gravy':'mutton curry','egg gravy':'egg curry',
+  'paneer gravy':'paneer curry','fish gravy':'fish curry','prawn gravy':'prawn curry',
   'eggs':'egg','boiled eggs':'boiled egg','fried eggs':'fried egg','scrambled eggs':'scrambled egg',
   'hard boiled egg':'boiled egg','hard boiled eggs':'boiled egg','poached egg':'boiled egg','poached eggs':'boiled egg',
   'omelette':'scrambled egg','omelet':'scrambled egg','egg omelette':'scrambled egg',
