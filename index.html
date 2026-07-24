@@ -2807,13 +2807,18 @@ function parseFoodText(raw) {
     if(ALIASES[text]) text = ALIASES[text];
 
     // Match food in FDB — prefer LONGER keys (more specific match wins)
+    // NOTE: only match when a catalog key EXTENDS what was typed (autocomplete-style,
+    // e.g. "malai" -> "malai kofta"). We deliberately do NOT truncate longer typed text
+    // down to a shorter catalog key (e.g. "lauki kofta" must never silently match "lauki") —
+    // that direction discards real information and produced wrong nutrition values.
+    // Anything that doesn't cleanly match is left unrecognised so it flows to AI lookup instead.
     var key = FDB[text] ? text : null;
     if(!key){
       var ks=Object.keys(FDB);
       // Collect all matches, pick the longest key (most specific)
       var bestKey=null, bestLen=0;
       for(var k=0;k<ks.length;k++){
-        if(text.length>=3 && (ks[k].indexOf(text)===0 || text.indexOf(ks[k])===0)){
+        if(text.length>=3 && ks[k].indexOf(text)===0){
           if(ks[k].length > bestLen){ bestKey=ks[k]; bestLen=ks[k].length; }
         }
       }
@@ -2823,7 +2828,7 @@ function parseFoodText(raw) {
       var ks2=Object.keys(FDB);
       var bestKey2=null, bestLen2=0;
       for(var k2=0;k2<ks2.length;k2++){
-        if(text.length>=4 && (ks2[k2].indexOf(text)>=0 || text.indexOf(ks2[k2])>=0)){
+        if(text.length>=4 && ks2[k2].indexOf(text)>=0){
           if(ks2[k2].length > bestLen2){ bestKey2=ks2[k2]; bestLen2=ks2[k2].length; }
         }
       }
@@ -2932,13 +2937,18 @@ function parseFoodText(raw) {
     if(ALIASES[text]) text = ALIASES[text];
 
     // Match food in FDB — prefer LONGER keys (more specific match wins)
+    // NOTE: only match when a catalog key EXTENDS what was typed (autocomplete-style,
+    // e.g. "malai" -> "malai kofta"). We deliberately do NOT truncate longer typed text
+    // down to a shorter catalog key (e.g. "lauki kofta" must never silently match "lauki") —
+    // that direction discards real information and produced wrong nutrition values.
+    // Anything that doesn't cleanly match is left unrecognised so it flows to AI lookup instead.
     var key = FDB[text] ? text : null;
     if(!key){
       var ks=Object.keys(FDB);
       // Collect all matches, pick the longest key (most specific)
       var bestKey=null, bestLen=0;
       for(var k=0;k<ks.length;k++){
-        if(text.length>=3 && (ks[k].indexOf(text)===0 || text.indexOf(ks[k])===0)){
+        if(text.length>=3 && ks[k].indexOf(text)===0){
           if(ks[k].length > bestLen){ bestKey=ks[k]; bestLen=ks[k].length; }
         }
       }
@@ -2948,7 +2958,7 @@ function parseFoodText(raw) {
       var ks2=Object.keys(FDB);
       var bestKey2=null, bestLen2=0;
       for(var k2=0;k2<ks2.length;k2++){
-        if(text.length>=4 && (ks2[k2].indexOf(text)>=0 || text.indexOf(ks2[k2])>=0)){
+        if(text.length>=4 && ks2[k2].indexOf(text)>=0){
           if(ks2[k2].length > bestLen2){ bestKey2=ks2[k2]; bestLen2=ks2[k2].length; }
         }
       }
