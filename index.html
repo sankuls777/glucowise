@@ -468,8 +468,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <!-- Food entry -->
   <div class="sec">What are you eating?</div>
   <div style="padding:0 14px 6px">
-    <div style="margin-bottom:8px">
-      <input type="text" id="nif-food" placeholder="e.g. 1.5 phulka, 0.25 cup subzi, 1 cup sambhar, 0.25 cup curd…" style="width:100%" autocomplete="off">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="nif-food" placeholder="e.g. 1.5 phulka, 0.25 cup subzi, 1 cup sambhar, 0.25 cup curd…" style="flex:1" autocomplete="off">
+      <button onclick="triggerFoodPhoto('nif')" title="Snap a photo — AI identifies the meal" style="padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);color:var(--teal);cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;white-space:nowrap">
+        <i class="ti ti-camera" style="font-size:16px;vertical-align:-2px"></i>
+      </button>
+      <input type="file" id="nif-food-photo" accept="image/*" capture="environment" style="display:none" onchange="handleFoodPhoto(event,'nif')">
     </div>
     <!-- Quick add buttons -->
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
@@ -775,9 +779,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
   <div class="sec">What are you eating?</div>
   <div style="padding:0 14px 6px">
-    <div style="margin-bottom:8px">
-      <input type="text" id="c-food" placeholder="e.g. 1.5 phulka, 0.25 cup subzi, 1 cup sambhar, 0.25 cup curd…" style="width:100%" autocomplete="off">
-
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="c-food" placeholder="e.g. 1.5 phulka, 0.25 cup subzi, 1 cup sambhar, 0.25 cup curd…" style="flex:1" autocomplete="off">
+      <button onclick="triggerFoodPhoto('c')" title="Snap a photo — AI identifies the meal" style="padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);color:var(--teal);cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;white-space:nowrap">
+        <i class="ti ti-camera" style="font-size:16px;vertical-align:-2px"></i>
+      </button>
+      <input type="file" id="c-food-photo" accept="image/*" capture="environment" style="display:none" onchange="handleFoodPhoto(event,'c')">
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
       <button class="btn-sm" onclick="quickAdd('2 chapati',40,6,4,2)">2 chapati</button>
@@ -1066,7 +1073,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div class="sec">AI food lookup (optional)</div>
   <div class="card" style="margin-bottom:8px">
-    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px">Enter your Anthropic API key to enable <strong>AI-powered nutrition lookup</strong> for any food. Get a free key at <strong>console.anthropic.com</strong>. Stored only on this device.</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px">Enter your Anthropic API key to enable <strong>AI-powered nutrition lookup</strong> for any food — by typing a description, or by <strong>snapping a photo</strong> of your meal with the camera button on the food screens. Get a free key at <strong>console.anthropic.com</strong>. Stored only on this device.</div>
     <div style="display:flex;gap:8px;margin-bottom:6px">
       <input type="password" id="s-apikey" placeholder="sk-ant-api03-..." style="flex:1;font-size:13px;padding:9px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:monospace">
       <button onclick="testApiKey()" style="padding:9px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;font-size:13px;font-family:inherit;color:var(--text);white-space:nowrap;font-weight:600">Test key</button>
@@ -3165,7 +3172,8 @@ function _aiLookupFoods(foodList, apiKey) {
           p:  Math.round(item.protein || 0),
           fi: Math.round(item.fiber   || 0),
           f:  Math.round(item.fat     || 0),
-          aiLooked: true
+          aiLooked: true,
+          aiSource: 'text'
         });
       }
     });
@@ -3178,6 +3186,127 @@ function _aiLookupFoods(foodList, apiKey) {
     showToast('AI lookup failed - check API key in Settings');
     _finishCalcFood();
   });
+}
+
+// ── AI Food Recognition — photo/camera path (Feature 2) ─────────────────
+function triggerFoodPhoto(target) {
+  var apiKey = localStorage.getItem('gw_apikey');
+  if(!apiKey){ showToast('Add an Anthropic API key in Settings to use AI photo recognition'); return; }
+  var input = document.getElementById(target === 'nif' ? 'nif-food-photo' : 'c-food-photo');
+  if(input) input.click();
+}
+
+function handleFoodPhoto(event, target) {
+  var file = event.target.files && event.target.files[0];
+  event.target.value = ''; // allow re-selecting the same file next time
+  if(!file) return;
+
+  var apiKey = localStorage.getItem('gw_apikey');
+  if(!apiKey){ showToast('Add an Anthropic API key in Settings to use AI photo recognition'); return; }
+
+  var isNif = (target === 'nif');
+  var btnId = isNif ? 'nif-calc-btn' : 'btn-calc-food';
+  var btn = document.getElementById(btnId);
+  var originalHTML = btn ? btn.innerHTML : '';
+  if(btn){ btn.textContent = 'Reading photo with AI…'; btn.disabled = true; }
+  showToast('Analysing photo…');
+
+  var reader = new FileReader();
+  reader.onload = function() {
+    var dataUrl = reader.result; // e.g. data:image/jpeg;base64,AAAA...
+    var match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.*)$/.exec(dataUrl);
+    if(!match){
+      showToast('Could not read that photo — try another one');
+      if(btn){ btn.innerHTML = originalHTML; btn.disabled = false; }
+      return;
+    }
+    var mediaType = match[1];
+    var base64Data = match[2];
+
+    var promptText = 'You are a nutrition database. Identify every distinct food item visible in this photo of a meal ' +
+      'and estimate the portion actually shown (not a generic serving). ' +
+      'Respond ONLY with a valid JSON array, no other text, no markdown, no explanation. ' +
+      'Each item: {"name":"food name","serving":"estimated portion, e.g. 1 cup / 100g / 2 pieces",' +
+      '"carbs":number,"protein":number,"fiber":number,"fat":number,"calories":number}. ' +
+      'All values in grams (calories in kcal), for the portion actually visible in the photo.';
+
+    fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+            { type: 'text', text: promptText }
+          ]
+        }]
+      })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      if(btn){ btn.innerHTML = originalHTML; btn.disabled = false; }
+
+      if(data.error) {
+        showToast('AI error: ' + data.error.message);
+        return;
+      }
+
+      var text = data.content && data.content[0] ? data.content[0].text : '';
+      text = text.replace(/```json|```/g, '').trim();
+
+      var aiItems;
+      try { aiItems = JSON.parse(text); } catch(e) {
+        showToast('Could not read the food in that photo — try again or type it in');
+        return;
+      }
+      if(!Array.isArray(aiItems)) aiItems = [aiItems];
+      aiItems = aiItems.filter(function(item){ return item && typeof item.carbs !== 'undefined'; });
+      if(!aiItems.length){ showToast('No food recognised in that photo'); return; }
+
+      if(isNif) {
+        aiItems.forEach(function(item) {
+          nifFoods.push({
+            name: item.name + (item.serving ? ' ('+item.serving+')' : ''),
+            c:  Math.round(item.carbs   || 0),
+            p:  Math.round(item.protein || 0),
+            fi: Math.round(item.fiber   || 0),
+            f:  Math.round(item.fat     || 0),
+            source: 'text',
+            aiSource: 'photo'
+          });
+        });
+        nifUpdateDisplay();
+        document.getElementById('nif-edit-link').style.display = 'block';
+      } else {
+        aiItems.forEach(function(item) {
+          foods.push({
+            name: item.name + (item.serving ? ' ('+item.serving+')' : ''),
+            c:  Math.round(item.carbs   || 0),
+            p:  Math.round(item.protein || 0),
+            fi: Math.round(item.fiber   || 0),
+            f:  Math.round(item.fat     || 0),
+            aiLooked: true,
+            aiSource: 'photo'
+          });
+        });
+        _finishCalcFood();
+      }
+
+      showToast('AI recognised ' + aiItems.length + ' food(s) from the photo');
+    })
+    .catch(function() {
+      if(btn){ btn.innerHTML = originalHTML; btn.disabled = false; }
+      showToast('AI photo lookup failed — check your internet connection');
+    });
+  };
+  reader.onerror = function() {
+    showToast('Could not read that photo file');
+    if(btn){ btn.innerHTML = originalHTML; btn.disabled = false; }
+  };
+  reader.readAsDataURL(file);
 }
 
 function testApiKey() {
@@ -3212,8 +3341,16 @@ function renderChips() {
   e.innerHTML = foods.map(function(fd,i){
     var cals = Math.round((fd.c*4)+(fd.p*4)+(fd.f*9));
     var label = fd.c > 0 ? fd.c+'g carbs' : cals+'kcal';
-    return '<span class="chip">'+fd.name+' <span class="cv">'+label+'</span><span class="chip-x" onclick="removeChip('+i+')"><i class="ti ti-x" style="font-size:15px"></i></span></span>';
+    var aiBadge = fd.aiSource ? aiBadgeHTML(fd.aiSource) : '';
+    return '<span class="chip">'+fd.name+aiBadge+' <span class="cv">'+label+'</span><span class="chip-x" onclick="removeChip('+i+')"><i class="ti ti-x" style="font-size:15px"></i></span></span>';
   }).join('');
+}
+
+// Small badge shown on chips for AI-sourced items (Feature 2 — AI Food Recognition)
+function aiBadgeHTML(source) {
+  var icon = source === 'photo' ? 'ti-camera' : 'ti-sparkles';
+  var title = source === 'photo' ? 'Identified by AI from photo' : 'Looked up by AI';
+  return '<span title="'+title+'" style="font-size:9px;background:#fff;color:var(--teal);padding:1px 5px;border-radius:6px;margin-left:2px;font-weight:800;display:inline-flex;align-items:center;gap:2px"><i class="ti '+icon+'" style="font-size:10px"></i>AI</span>';
 }
 
 function removeChip(i) {
@@ -3716,7 +3853,7 @@ function nifCalcFood() {
         if(!Array.isArray(items)) items=[items];
         items.forEach(function(item){
           if(!item||typeof item.carbs==='undefined') return;
-          nifFoods.push({name:item.name+(item.serving?' ('+item.serving+')':''),c:Math.round(item.carbs||0),p:Math.round(item.protein||0),fi:Math.round(item.fiber||0),f:Math.round(item.fat||0),source:'text'});
+          nifFoods.push({name:item.name+(item.serving?' ('+item.serving+')':''),c:Math.round(item.carbs||0),p:Math.round(item.protein||0),fi:Math.round(item.fiber||0),f:Math.round(item.fat||0),source:'text',aiSource:'text'});
         });
         showToast('AI found '+items.length+' food(s)');
       }catch(e){showToast('AI lookup failed — showing partial results');}
@@ -3792,7 +3929,7 @@ function nifRenderChips() {
   e.innerHTML = nifFoods.map(function(fd,i){
     var cals=Math.round(fd.c*4+fd.p*4+fd.f*9);
     var label=fd.c>0?fd.c+'g carbs':cals+'kcal';
-    var srcBadge=fd.source==='quick'?'<span style="font-size:9px;color:var(--teal);margin-left:2px">★</span>':'';
+    var srcBadge=fd.source==='quick'?'<span style="font-size:9px;color:var(--teal);margin-left:2px">★</span>':(fd.aiSource?aiBadgeHTML(fd.aiSource):'');
     return '<span class="chip">'+fd.name+srcBadge+' <span class="cv">'+label+'</span>'+
       '<span class="chip-x" onclick="nifRemoveChip('+i+')"><i class="ti ti-x" style="font-size:15px"></i></span></span>';
   }).join('')+
